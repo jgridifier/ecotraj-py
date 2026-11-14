@@ -45,7 +45,10 @@ def _point_segment_geometry(dpu, dpv, L, add=True):
         t = (a**2 + c**2 - b**2) / (2 * c)
         h = np.sqrt(np.maximum(a**2 - t**2, 0.0))
     # beyond the ends the distance to the endpoint is the original (uncorrected) one
-    e = np.where(t <= 0, np.asarray(dpu, dtype=float), np.where(t >= c, np.asarray(dpv, dtype=float), h))
+    ra, rb, rc = (np.asarray(v, dtype=float) for v in (dpu, dpv, L))
+    e = np.where(t <= 0, ra, np.where(t >= c, rb, h))
+    if add:  # segment longer than the two other sides together: nearest endpoint, uncorrected
+        e = np.where(rc > ra + rb, np.minimum(ra, rb), e)
     return t, h, e, c
 
 
