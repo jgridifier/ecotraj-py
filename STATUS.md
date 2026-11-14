@@ -2,6 +2,15 @@
 
 Newest first. One entry per working session: date (ET), milestone, what passed, next step.
 
+## 2026-11-14 — M4 done (Extension 2 simulations, pre-registered run)
+- Ran exactly the pre-registered configuration (seed 2026111401, B=199, R=2000/1000, 10 cells) at commit c297c65 (M2 + Addendum 1); 1,415 s on 8 cores; 0 invalid replications.
+- P1 (increment split, re-projected sign flip): size 0.052 (T=40) and 0.053 (T=62), inside [0.030, 0.070]; power 0.997 at T=62 (0.937 at T=40). **Extension 2 PASSES.**
+- L (old level procedure): size 0.001 / 0.001 and power 0.013 -> misses both criteria. McNemar (ii, T=62): 1,966 vs 0 discordant, so "P1 has more power than L" is permitted.
+- Secondary nulls (P1): heavy tails 0.046 / 0.047, heteroskedastic 0.040 / 0.038 (in band); stationary levels 0.000 (conservative, allowed). P1-naive (the scout's exact m1b procedure): 0.068 / 0.060 in scenario i, reported without a verdict.
+- Provenance: run 1 used a stale numba cache; fixed (53b8086) and re-ran the full pre-registered configuration with caches cleared: all CSVs byte-identical (results/PROVENANCE.md).
+- Spot-check: three replications recomputed independently with the slow reference statistic; statistics and counts identical.
+- Next: parity round 3 PR (DS rule found), results page.
+
 ## 2026-11-14 — M2 done (speed, Extension 1)
 - numba kernels `ecotrajpy.fast` (directionality, parallel sign-flip null), equal to the reference to <= 1e-12, exact p on R fixtures; Claude reviewed Codex's kernels, Codex fixed all points.
 - Benchmark (999 sign-flip draws, five-run medians): T=62 x 14 parts: R ecotraj naive loop 98.8 s*, Python reference 8.89 s, numba 1 thread 0.593 s, 8 threads 0.106 s. T=120 x 50 parts: R 614 s*, Python 74.1 s, numba 1 thread 3.21 s, 8 threads 0.424 s. (*R extrapolated from warm batches.) Cold JIT 1.16 s.
