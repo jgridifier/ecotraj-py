@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecotrajpy"
+version = "0.1.0"
+description = "Clean-room Python port of Ecological Trajectory Analysis (ETA) metrics, validated against the R package ecotraj 1.2.2"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "scipy>=1.10", "pandas>=2.0"]
+
+[project.optional-dependencies]
+fast = ["numba>=0.58"]
+test = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: long simulations (deselect with -m 'not slow')"]
