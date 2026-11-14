@@ -1,2 +1,59 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ecotrajpy</title></head><body><h1>ecotrajpy</h1><p>Clean-room Python port of Ecological Trajectory Analysis. Pages under construction (M0).</p></body></html>
+<title>ecotrajpy: trajectory analysis for compositions, explained</title><link rel="stylesheet" href="style.css"></head><body>
+<nav><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="https://github.com/jgridifier/ecotraj-py">Repo</a></nav>
+<h1>ecotrajpy</h1>
+<p class="sub">A clean-room Python port of Ecological Trajectory Analysis (ETA), plus a tested market/residual split for share data.</p>
+
+<div class="box"><b>Credit.</b> The methods are by De Cáceres, Coll, Legendre, Allen, Wiser, Fortin, Condit &amp; Hubbell (2019, <i>Ecological Monographs</i> 89:e01350,
+<a href="https://doi.org/10.1002/ecm.1350">doi</a>), Sturbois et al. (2021, <i>Ecological Modelling</i> 440:109400) and Djeghri et al. (2026, <i>Ecological Monographs</i> 96:e70058), implemented in the R package
+<a href="https://cran.r-project.org/package=ecotraj">ecotraj</a>. ecotraj is GPL; this package is MIT and contains no ecotraj code. It was written from the papers and the published documentation, and ecotraj 1.2.2 was used only as a black-box test oracle.</div>
+
+<h2>1. The idea: a time series of states is a path</h2>
+<p>Suppose you observe the same thing (a forest plot, a portfolio, a market split among a dozen players) at T dates, and each observation is a vector of many numbers. ETA treats the T states as points in a space where distances make sense, joins consecutive points with directed segments, and studies the <b>shape of the path</b>: how long it is, how sharply it turns, whether it keeps heading the same way, and how close it runs to other paths.</p>
+<p>Everything ETA computes needs only the matrix of pairwise distances between the states. That is why it works with any dissimilarity (Bray-Curtis, Aitchison, Euclidean) and why this port, like ecotraj, takes a distance matrix as its main input.</p>
+
+<h2>2. Shares need the right geometry: clr and Aitchison distance</h2>
+<p>When each state is a set of shares that sum to one, ordinary Euclidean distance on raw shares is misleading: a move from 1% to 2% is a doubling, while 40% to 41% is noise. The standard fix (Aitchison) is the centred log-ratio transform</p>
+<p class="formula">clr(s)<sub>j</sub> = log s<sub>j</sub> − mean<sub>k</sub> log s<sub>k</sub></p>
+<p>Euclidean distance between clr vectors is the Aitchison distance. Statistics computed on clr paths do not depend on the order of the parts or on which orthonormal (ilr) basis you use, and additive moves in clr correspond to multiplicative moves (perturbations) on the shares.</p>
+
+<h2>3. Directionality: does the path keep heading the same way?</h2>
+<p>For every ordered triple of states i &lt; j &lt; k, take the two segments i→j and j→k, with lengths s<sub>ij</sub>, s<sub>jk</sub>, and the change of direction θ<sub>ijk</sub> at j (0° = straight on, 180° = full reversal). De Cáceres et al. define</p>
+<p class="formula">D = Σ (s<sub>ij</sub> + s<sub>jk</sub>)(1 − θ<sub>ijk</sub>/180) / Σ (s<sub>ij</sub> + s<sub>jk</sub>)</p>
+<p>D is 1 for a straight line and about 0.5 for an aimless wander. Because it uses all triples, not just consecutive ones, it rewards paths that are directional over long stretches, even if they wiggle step to step. The angle comes from the three pairwise distances by the law of cosines; when a distance matrix breaks the triangle inequality, ecotraj adds the smallest constant that repairs that triangle, and so does this port.</p>
+
+<h2>4. Is it more directional than chance? The sign-flip null</h2>
+<p>ecotraj's built-in test shuffles the order of the surveys. On a smooth path that is a weak null: almost any shuffle looks jagged, so nearly everything comes out significant (our scout run got p = 0.001 on both panels). A sharper question is: given these exact step sizes, could random step <i>directions</i> produce this much persistence? The sign-flip null keeps every step's size and axis but flips its sign at random, rebuilds the path from the first state, and recomputes D. The p-value is (1 + #null ≥ observed)/(1 + draws).</p>
+
+<h2>5. Splitting a path into market and residual parts</h2>
+<p>Share paths often move because of a common driver (a volatility regime, an industry cycle) rather than anything specific to the parts. The 2026-11-12 scout tried two ways of removing that driver given k observed market covariates:</p>
+<ul>
+<li><b>Levels</b>: regress each clr coordinate on the covariates and test the residual levels. This hid a persistent residual drift (p = 0.994).</li>
+<li><b>Increments</b>: regress each clr <i>step</i> on the covariates' steps (no intercept), split every step into a fitted market piece and a residual piece, and rebuild a market sub-path and a residual sub-path from the first state. This found it (residual D = 0.595, p = 0.008).</li>
+</ul>
+<p>Because the split is additive in clr, the observed shares are exactly the start composition perturbed by the market path and by the residual path. Extension 2 (below) turns the increment split into a procedure with a demonstrated false-positive rate and power.</p>
+
+<h2>6. Comparing paths: segment and trajectory distances</h2>
+<p>To compare two paths, ETA first measures distances between directed segments (Hausdorff; the directed-segment distance, which also penalises opposite directions; and the perpendicular-parallel-angle distance of Lee et al. 2007), then aggregates them: SPD averages point-to-path distances, DSPD averages each segment's distance to the nearest segment of the other path, and both can be symmetrised. Convergence tests use a Mann-Kendall trend on the sequence of distances between paths.</p>
+
+<h2>7. What is in the package</h2>
+<table><tr><th>Python</th><th>ecotraj</th></tr>
+<tr><td><code>define_trajectories</code></td><td>defineTrajectories</td></tr>
+<tr><td><code>trajectory_lengths</code>, <code>trajectory_speeds</code></td><td>trajectoryLengths, trajectorySpeeds</td></tr>
+<tr><td><code>trajectory_angles</code>, <code>trajectory_directionality</code></td><td>trajectoryAngles, trajectoryDirectionality</td></tr>
+<tr><td><code>trajectory_internal_variation</code>, <code>trajectory_metrics</code></td><td>trajectoryInternalVariation, trajectoryMetrics</td></tr>
+<tr><td><code>trajectory_convergence</code></td><td>trajectoryConvergence</td></tr>
+<tr><td><code>segment_distances</code>, <code>trajectory_distances</code></td><td>segmentDistances, trajectoryDistances</td></tr>
+<tr><td><code>clr</code>, <code>signflip_test</code>, <code>increment_split</code></td><td>(scout-run helpers)</td></tr>
+<tr><td><code>ecotrajpy.fast</code></td><td>numba kernels for directionality and the sign-flip null (Extension 1)</td></tr>
+<tr><td><code>ecotrajpy.ext2</code></td><td>Extension 2 market/residual split and tests</td></tr></table>
+<pre>import numpy as np
+from ecotrajpy import clr
+from ecotrajpy.fast import signflip_test_fast
+
+shares = np.random.default_rng(0).dirichlet(np.ones(6) * 50, size=40)   # 40 dates x 6 parts
+res = signflip_test_fast(clr(shares), nsim=999, rng=1)
+print(res["stat"], res["p_value"])</pre>
+<p>Results (parity with ecotraj, speed, and the Extension 2 simulations) are on the <a href="results.html">results page</a>.</p>
+<p class="sub">Synthetic data only in this repo.</p>
+</body></html>
