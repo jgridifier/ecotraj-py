@@ -76,9 +76,10 @@ def _directionality_numpy(C):
 
 
 if njit is not None:
-    directionality_coords_fast = njit(cache=True)(_directionality_kernel)
+    # No disk cache: safe in read-only installations and no stale callees.
+    _directionality_impl = njit(cache=False)(_directionality_kernel)
 else:
-    directionality_coords_fast = _directionality_numpy
+    _directionality_impl = _directionality_numpy
 
 
 def _null_kernel(C, signs):
@@ -93,14 +94,35 @@ def _null_kernel(C, signs):
             for t in range(1, n):
                 total += signs[draw, t - 1] * (C[t, q] - C[t - 1, q])
                 path[t, q] = C[0, q] + total
-        out[draw] = directionality_coords_fast(path)
+        out[draw] = _directionality_impl(path)
     return out
 
 
 if njit is not None:
-    signflip_null_fast = njit(cache=True, parallel=True)(_null_kernel)
+    _null_impl = njit(cache=False, parallel=True)(_null_kernel)
 else:
-    signflip_null_fast = _null_kernel
+    _null_impl = _null_kernel
+
+
+def _coordinates(C):
+    C = np.ascontiguousarray(C, dtype=np.float64)
+    if C.ndim != 2 or len(C) == 0:
+        raise ValueError("C must be a nonempty (T, p) coordinate array")
+    return C
+
+
+def directionality_coords_fast(C):
+    """Euclidean directionality; array-likes are coerced to C-contiguous float64."""
+    return _directionality_impl(_coordinates(C))
+
+
+def signflip_null_fast(C, signs):
+    """Null statistics; coordinates and signs accept numeric array-likes."""
+    C = _coordinates(C)
+    signs = np.ascontiguousarray(signs, dtype=np.float64)
+    if signs.ndim != 2 or signs.shape[1] != len(C) - 1:
+        raise ValueError("signs must have shape (nsim, T-1)")
+    return _null_impl(C, signs)
 
 
 def signflip_test_fast(C, nsim=999, rng=None, signs=None):
@@ -108,7 +130,7 @@ def signflip_test_fast(C, nsim=999, rng=None, signs=None):
 
     Explicit signs override nsim. Near-ties are resolved with the reference
     arithmetic so parallel/scalar reduction roundoff cannot alter the p-value.
-    Kernels accept arrays; this convenience wrapper also accepts array-likes.
+    All public wrappers accept numeric array-likes.
     """
     C = np.ascontiguousarray(C, dtype=float)
     if C.ndim != 2 or len(C) == 0:
