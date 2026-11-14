@@ -99,7 +99,7 @@ def _circular_stats(a_deg):
         return np.nan, np.nan, np.nan
     r = np.radians(a)
     C, S = np.mean(np.cos(r)), np.mean(np.sin(r))
-    rho = np.hypot(C, S)
+    rho = np.sqrt(C * C + S * S)
     mean = np.degrees(np.arctan2(S, C)) % 360.0
     sd = np.sqrt(-2 * np.log(rho)) if rho > 0 else np.inf
     return mean, sd, rho
