@@ -1,0 +1,79 @@
+{
+  "master_seed": 2026111401,
+  "B": 199,
+  "preregistered_configuration": true,
+  "reps_override": null,
+  "cells": {
+    "i_T40": {
+      "scenario": "i",
+      "T": 40,
+      "R": 2000,
+      "cell_index": 0,
+      "seconds": 46.64623260498047
+    },
+    "i_T62": {
+      "scenario": "i",
+      "T": 62,
+      "R": 2000,
+      "cell_index": 1,
+      "seconds": 179.19805216789246
+    },
+    "ii_T40": {
+      "scenario": "ii",
+      "T": 40,
+      "R": 2000,
+      "cell_index": 2,
+      "seconds": 52.17867350578308
+    },
+    "ii_T62": {
+      "scenario": "ii",
+      "T": 62,
+      "R": 2000,
+      "cell_index": 3,
+      "seconds": 538.2168908119202
+    },
+    "i-b_T40": {
+      "scenario": "i-b",
+      "T": 40,
+      "R": 1000,
+      "cell_index": 4,
+      "seconds": 24.76775288581848
+    },
+    "i-b_T62": {
+      "scenario": "i-b",
+      "T": 62,
+      "R": 1000,
+      "cell_index": 5,
+      "seconds": 89.17754316329956
+    },
+    "i-c_T40": {
+      "scenario": "i-c",
+      "T": 40,
+      "R": 1000,
+      "cell_index": 6,
+      "seconds": 27.22904634475708
+    },
+    "i-c_T62": {
+      "scenario": "i-c",
+      "T": 62,
+      "R": 1000,
+      "cell_index": 7,
+      "seconds": 333.27454566955566
+    },
+    "i-d_T40": {
+      "scenario": "i-d",
+      "T": 40,
+      "R": 1000,
+      "cell_index": 8,
+      "seconds": 26.98567008972168
+    },
+    "i-d_T62": {
+      "scenario": "i-d",
+      "T": 62,
+      "R": 1000,
+      "cell_index": 9,
+      "seconds": 96.86810898780823
+    }
+  },
+  "total_seconds": 1414.6361978054047
+}
