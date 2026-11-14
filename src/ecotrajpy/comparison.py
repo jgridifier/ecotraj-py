@@ -37,10 +37,25 @@ def _segments(x: Trajectories):
     return np.array(ini), np.array(fin), np.array(owner), labels
 
 
+def _point_segment_geometry(dpu, dpv, L, add=True):
+    """For a point p and segment (u, v): position t of the projection of p on the
+    line u->v (distance from u), altitude h to the line and distance e to the segment."""
+    a, b, c = triangle_fix(*(np.asarray(v, dtype=float) for v in (dpu, dpv, L)), add)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        t = (a**2 + c**2 - b**2) / (2 * c)
+        h = np.sqrt(np.maximum(a**2 - t**2, 0.0))
+    # beyond the ends the distance to the endpoint is the original (uncorrected) one
+    ra, rb, rc = (np.asarray(v, dtype=float) for v in (dpu, dpv, L))
+    e = np.where(t <= 0, ra, np.where(t >= c, rb, h))
+    if add:  # segment longer than the two other sides together: nearest endpoint, uncorrected
+        e = np.where(rc > ra + rb, np.minimum(ra, rb), e)
+    return t, h, e, c
+
+
 def _hausdorff_matrix(d, ini, fin, add):
     L = d[ini, fin]
-    n = len(ini)
     # D[p, s]: distance of point p (ini or fin of any segment) to segment s
+
     def pt(points):
         dpu = d[np.ix_(points, ini)]
         dpv = d[np.ix_(points, fin)]
@@ -57,10 +72,7 @@ def _segment_geometry(d, ini, fin, add):
     dff = d[np.ix_(fin, fin)]
     dif = d[np.ix_(ini, fin)]
     dfi = dif.T
-    dot = 0.5 * (dif.T**2 + dif**2 - dii**2 - dff**2)  # (B-A).(D-C), A,B=seg i
-    # dot[i,j] = 0.5*(|A_i-D_j|^2 + |B_i-C_j|^2 - |A_i-C_j|^2 - |B_i-D_j|^2)
-    dot = 0.5 * (dif**2 + dfi**2 - dii**2 - dff**2)
-    return L, dii, dff, dif, dfi, dot
+    return L, dii, dff, dif, dfi
 
 
 def segment_distances(x: Trajectories, distance_type="directed-segment", add=True) -> dict:
@@ -72,26 +84,35 @@ def segment_distances(x: Trajectories, distance_type="directed-segment", add=Tru
     point of the row segment to final point of the column segment) and
     ``Dfinini``, labelled ``site[s1-s2]``.
 
-    Hausdorff is the exact Hausdorff distance between the two geometric
-    segments. For angles between segments below 90 degrees the directed-segment
-    distance equals it; for obtuse angles ecotraj adds a direction penalty whose
-    exact form is not reproduced here (an approximation is used; see docs).
+    As in ecotraj (whose ``Dseg`` is an R ``dist`` object) only the lower triangle
+    of the segment-by-segment computation is retained and mirrored: the value for
+    segments ``i < j`` is computed with ``i`` as the first segment and ``j`` as
+    the second one (matters only for asymmetric definitions and for ties in length).
+
+    PPA follows Lee et al. (2007) with parallel/angle terms evaluated from the
+    triangles formed by the endpoints (see ``_ppa_pair``). The directed-segment
+    distance equals the Hausdorff distance unless the segments form an obtuse
+    angle; in that case ecotraj adds a direction penalty whose exact form is only
+    partly reproduced here (see ``_directed_segment``).
     """
     d = x.d
     ini, fin, _, labels = _segments(x)
-    L, dii, dff, dif, dfi, dot = _segment_geometry(d, ini, fin, add)
+    L, dii, dff, dif, dfi = _segment_geometry(d, ini, fin, add)
     H, pi, pf = _hausdorff_matrix(d, ini, fin, add)
-    with np.errstate(divide="ignore", invalid="ignore"):
-        cosang = dot / (L[:, None] * L[None, :])
+    n = len(ini)
     if distance_type == "Hausdorff":
-        Dseg = H
+        Dseg = H.copy()
     elif distance_type == "directed-segment":
-        Dseg = _directed_segment(H, L, cosang, pi, pf)
+        Dseg = _directed_segment(d, ini, fin, L, H, pi, pf, add)
     elif distance_type == "PPA":
-        Dseg = _ppa(d, ini, fin, L, cosang, add)
+        Dseg = np.zeros((n, n))
+        for i in range(n):
+            for j in range(i + 1, n):
+                Dseg[j, i] = _ppa_pair(d, ini, fin, L, i, j, add)
     else:
         raise ValueError("distance_type must be 'directed-segment', 'Hausdorff' or 'PPA'")
-    np.fill_diagonal(Dseg, 0.0)
+    Dseg = np.tril(Dseg, -1)
+    Dseg = Dseg + Dseg.T  # as.dist() in R keeps the lower triangle
 
     def df(m):
         return pd.DataFrame(m, index=labels, columns=labels)
@@ -99,60 +120,72 @@ def segment_distances(x: Trajectories, distance_type="directed-segment", add=Tru
     return dict(Dseg=df(Dseg), Dini=df(dii), Dfin=df(dff), Dinifin=df(dif))
 
 
-def _directed_segment(H, L, cosang, pi, pf):
+def _obtuse(d, ini, fin, i, j):
+    """True if the angle between directed segments i and j is obtuse (dot < 0)."""
+    A, B, C, D = ini[i], fin[i], ini[j], fin[j]
+    return 0.5 * (d[A, D] ** 2 + d[B, C] ** 2 - d[A, C] ** 2 - d[B, D] ** 2) < 0
+
+
+def _directed_segment(d, ini, fin, L, H, pi, pf, add):
     """Directed-segment distance.
 
     Equal to the Hausdorff distance when the angle between segments is < 90
-    degrees (exact, verified against ecotraj). For obtuse angles ecotraj adds
-    a penalty; empirically (about 74% of random cases to 1e-6) it is
-    max(H, Lmax + min distance from the endpoints of the longer segment to the
-    shorter one). This branch is an approximation of ecotraj's behaviour.
+    degrees (exact, verified against ecotraj). For obtuse angles ecotraj adds a
+    penalty; empirically (about 85% of random 2D cases, to 1e-6) it is
+    max(H, F2, F3) with F2 = L2 + (distance of the nearest endpoint of S2 to S1) and
+    F3 = L1 + (distance of the nearest endpoint of S1 to S2), applied only when some
+    endpoint of one segment projects inside the other. This is an approximation.
     """
     n = len(L)
+    ti, _, _, _ = _point_segment_geometry(d[np.ix_(ini, ini)], d[np.ix_(ini, fin)], L[None, :], add)
+    tf, _, _, _ = _point_segment_geometry(d[np.ix_(fin, ini)], d[np.ix_(fin, fin)], L[None, :], add)
+    inside = lambda t, k: bool(0 <= t <= L[k])  # noqa: E731
     out = H.copy()
-    near = np.minimum(pi, pf)  # near[i, j]: closest endpoint of segment i to segment j
     for i in range(n):
-        for j in range(n):
-            if i != j and cosang[i, j] < 0:
-                x = near[i, j] if L[i] >= L[j] else near[j, i]
-                out[i, j] = max(H[i, j], max(L[i], L[j]) + x)
-    return out
-
-
-def _proj_geometry(d, ini, fin, L, i, j, add):
-    """Shorter segment s projected on the line of the longer one l.
-    Returns (l_perp_start, l_perp_end, par_start, par_end)."""
-    s, l = (i, j) if L[i] <= L[j] else (j, i)
-    out = []
-    for p in (ini[s], fin[s]):
-        a, b, c = triangle_fix(d[p, ini[l]], d[p, fin[l]], L[l], add)
-        t = (a**2 + c**2 - b**2) / (2 * c) if c > 0 else 0.0
-        hperp = np.sqrt(max(a**2 - t**2, 0.0))
-        out.append((hperp, min(abs(t), abs(c - t))))
-    return out[0][0], out[1][0], out[0][1], out[1][1], s
-
-
-def _perp(d, ini, fin, L, i, j, add):
-    l1, l2, _, _, _ = _proj_geometry(d, ini, fin, L, i, j, add)
-    return (l1**2 + l2**2) / (l1 + l2) if l1 + l2 > 0 else 0.0
-
-
-def _ppa(d, ini, fin, L, cosang, add):
-    """Perpendicular + parallel + angle distance (Besse et al. 2016)."""
-    n = len(ini)
-    out = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            if i == j:
+        for j in range(i + 1, n):
+            if not _obtuse(d, ini, fin, i, j):
                 continue
-            l1, l2, p1, p2, s = _proj_geometry(d, ini, fin, L, i, j, add)
-            perp = (l1**2 + l2**2) / (l1 + l2) if l1 + l2 > 0 else 0.0
-            par = min(p1, p2)
-            c = cosang[i, j]
-            theta = np.arccos(np.clip(c, -1, 1))
-            dth = L[s] * (np.sin(theta) if theta < np.pi / 2 else 1.0)
-            out[i, j] = perp + par + dth
+            # S1 = i (A, B), S2 = j (C, D); ti[x, s]: initial point of x onto segment s
+            if not (inside(ti[i, j], j) or inside(tf[i, j], j) or inside(ti[j, i], i) or inside(tf[j, i], i)):
+                continue
+            F2 = L[j] + min(pi[j, i], pf[j, i])
+            F3 = L[i] + min(pi[i, j], pf[i, j])
+            out[j, i] = out[i, j] = max(H[i, j], F2, F3)
     return out
+
+
+def _lehmer(x, y):
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return (x * x + y * y) / (x + y)
+
+
+def _ppa_pair(d, ini, fin, L, i, j, add):
+    """Perpendicular-parallel-angle distance between segments i (first) and j (second).
+
+    The longer segment (i on ties) is the reference, the shorter one is projected
+    on it. For each endpoint of the shorter segment, with ``e`` its distance to the
+    reference segment and ``par`` its parallel offset (distance of the projection to
+    the nearest end of the reference when it falls inside it, else 0):
+    ``PPA = Lehmer(e1, e2) + min(par) + angle`` where the angle term is
+    ``|e1 - e2|`` for acute angles (or when no projection falls inside) and
+    the length of the shorter segment for obtuse angles (as in TRACLUS).
+    """
+    if L[i] >= L[j]:
+        lo, sh = i, j
+    else:
+        lo, sh = j, i
+    e, par, inside = [], [], []
+    for p in (ini[sh], fin[sh]):
+        t, h, ee, c = _point_segment_geometry(d[p, ini[lo]], d[p, fin[lo]], L[lo], add)
+        ok = bool(0 <= t <= c)
+        inside.append(ok)
+        e.append(float(ee))
+        par.append(float(min(t, c - t)) if ok else 0.0)
+    if not any(inside) or not _obtuse(d, ini, fin, lo, sh):
+        angle = abs(e[0] - e[1])
+    else:
+        angle = L[sh]
+    return float(_lehmer(np.float64(e[0]), np.float64(e[1]))) + min(par) + angle
 
 
 def trajectory_distances(x: Trajectories, distance_type="DSPD", symmetrization="mean", add=True) -> pd.DataFrame:
@@ -259,8 +292,9 @@ def trajectory_convergence(x: Trajectories, type="pairwise.asymmetric", add=True
             if a == b:
                 continue
             if type == "pairwise.symmetric":
-                m = min(len(idxs[a]), len(idxs[b]))  # truncated to common surveys (as ecotraj)
-                seq = d[idxs[a][:m], idxs[b][:m]]
+                if len(idxs[a]) != len(idxs[b]):  # ecotraj gives NA for unequal numbers of surveys
+                    continue
+                seq = d[idxs[a], idxs[b]]
             elif type == "pairwise.asymmetric":
                 ib = idxs[b]
                 u, w = ib[:-1], ib[1:]

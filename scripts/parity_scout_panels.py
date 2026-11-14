@@ -22,7 +22,13 @@ TARGETS = {
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", required=True)
+    ap.add_argument("--signs-json", default=None,
+                    help="optional JSON of R's recorded sign draws (local only) to check sign-flip p exactly")
     a = ap.parse_args()
+    signs = None
+    if a.signs_json:
+        import json
+        signs = json.load(open(a.signs_json))
     mq = pd.read_csv(os.path.join(a.data_dir, "market_q.csv"), index_col="observation_date")
     for panel in ("A", "E4"):
         df = pd.read_csv(os.path.join(a.data_dir, f"panel_{panel}.csv"), index_col=0)
@@ -39,6 +45,13 @@ def main():
         print(f"panel {panel}")
         for name, ours, tgt in rows:
             print(f"  {name:26s} ours={ours:.6f} target={tgt:.6f} diff={ours-tgt:+.2e}")
+        if signs is not None:
+            from ecotrajpy.nulls import signflip_test
+            for nm in ("market", "residual"):
+                rec = signs[panel][nm]
+                r = signflip_test(sp[nm], signs=np.asarray(rec["signs"], dtype=float))
+                dmax = float(np.max(np.abs(np.asarray(r["null"]) - np.asarray(rec["null"]))))
+                print(f"  {nm+' sign-flip p (R signs)':26s} ours={r['p_value']:.3f} R={rec['p_signflip'][0] if isinstance(rec['p_signflip'], list) else rec['p_signflip']:.3f} max|null diff|={dmax:.1e}")
 
 
 if __name__ == "__main__":

@@ -91,3 +91,68 @@ def test_empty_null():
     result = fast.signflip_test_fast(C, nsim=0)
     assert result['null'].shape == (0,)
     assert result['p_value'] == 1.0
+
+
+@pytest.fixture(params=[False, True], ids=['numba', 'fallback'])
+def backend(request, monkeypatch):
+    if not request.param:
+        return fast
+    original = builtins.__import__
+    def no_numba(name, *args, **kwargs):
+        if name == 'numba':
+            raise ImportError('simulated missing optional dependency')
+        return original(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, '__import__', no_numba)
+    spec = importlib.util.spec_from_file_location('ecotrajpy._fallback_inputs', fast.__file__)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize('kind', ['integer', 'list', 'fortran', 'slice', 'nan'])
+def test_public_inputs(backend, kind):
+    C = np.array([[0, 1], [2, 3], [5, 2], [3, 4]])
+    signs = np.array([[1, -1, 1], [-1, 1, -1]])
+    if kind == 'list':
+        C, signs = C.tolist(), signs.tolist()
+    elif kind == 'fortran':
+        C, signs = np.asfortranarray(C), np.asfortranarray(signs)
+    elif kind == 'slice':
+        C, signs = C[::-1], signs[:, ::-1]
+    elif kind == 'nan':
+        C = C.astype(float)
+        C[1, 0] = np.nan
+    expected = signflip_test(C, signs=signs)
+    np.testing.assert_allclose(backend.directionality_coords_fast(C), expected['stat'], atol=1e-12)
+    np.testing.assert_allclose(backend.signflip_null_fast(C, signs), expected['null'], atol=1e-12)
+    actual = backend.signflip_test_fast(C, signs=signs)
+    np.testing.assert_allclose(actual['null'], expected['null'], atol=1e-12)
+    assert actual['p_value'] == expected['p_value']
+
+
+def test_triangle_roundoff_correction(backend):
+    # Exact Euclidean distances obey the inequality, but floating point can
+    # violate it. These collinear coordinates reach the positive correction.
+    C = np.array([[-6.544475229123465], [-2.010679595791971], [8.574208655490004]])
+    a, b, c = abs(C[0, 0]-C[1, 0]), abs(C[1, 0]-C[2, 0]), abs(C[0, 0]-C[2, 0])
+    assert 2 * max(a, b, c) - (a + b + c) > 0
+    np.testing.assert_allclose(backend.directionality_coords_fast(C), directionality_coords(C), atol=1e-12)
+
+
+def test_thread_counts_identical(tmp_path):
+    import os
+    import subprocess
+    import sys
+    pytest.importorskip('numba')
+    code = '''
+import numpy as np
+from ecotrajpy.fast import signflip_null_fast
+rng = np.random.default_rng(91)
+C = rng.normal(size=(35, 4)).cumsum(0)
+signs = rng.choice([-1, 1], size=(23, 34))
+np.save(__import__('sys').argv[1], signflip_null_fast(C, signs))
+'''
+    for threads in (1, 4):
+        subprocess.run([sys.executable, '-c', code, str(tmp_path / f'{threads}.npy')],
+                       env={**os.environ, 'NUMBA_NUM_THREADS': str(threads)}, check=True)
+    np.testing.assert_array_equal(np.load(tmp_path / '1.npy'), np.load(tmp_path / '4.npy'))
