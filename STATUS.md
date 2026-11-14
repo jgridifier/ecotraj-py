@@ -7,6 +7,7 @@ Newest first. One entry per working session: date (ET), milestone, what passed, 
 - P1 (increment split, re-projected sign flip): size 0.052 (T=40) and 0.053 (T=62), inside [0.030, 0.070]; power 0.997 at T=62 (0.937 at T=40). **Extension 2 PASSES.**
 - L (old level procedure): size 0.001 / 0.001 and power 0.013 -> misses both criteria. McNemar (ii, T=62): 1,966 vs 0 discordant, so "P1 has more power than L" is permitted.
 - Secondary nulls (P1): heavy tails 0.046 / 0.047, heteroskedastic 0.040 / 0.038 (in band); stationary levels 0.000 (conservative, allowed). P1-naive (the scout's exact m1b procedure): 0.068 / 0.060 in scenario i, reported without a verdict.
+- Provenance: run 1 used a stale numba cache; fixed (53b8086) and re-ran the full pre-registered configuration with caches cleared: all CSVs byte-identical (results/PROVENANCE.md).
 - Spot-check: three replications recomputed independently with the slow reference statistic; statistics and counts identical.
 - Next: parity round 3 PR (DS rule found), results page.
 

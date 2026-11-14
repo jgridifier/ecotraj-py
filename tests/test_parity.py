@@ -28,10 +28,20 @@ def _sequence(value):
     return value if isinstance(value, list) else [value]
 
 
+# Circular sd = sqrt(-2 log rho). When the true value is 0 (a single angle), rho rounds to
+# 1 or 1 - eps and the sd comes out as 0 or sqrt(2*eps) = 1.49e-08 depending on platform
+# last-bit arithmetic. Only for sd columns, values at or below that floor count as equal.
+SD_ULP_FLOOR = float(np.sqrt(2 * np.finfo(float).eps)) * 1.01
+
+
 def _numeric(actual, expected, path):
     a = np.asarray(actual, dtype=float)
     e = np.asarray(expected, dtype=float)  # JSON null (R NA/NaN) becomes NaN.
     assert a.shape == e.shape, f"{path}: shape {a.shape} != {e.shape}"
+    if path.endswith(".sd"):
+        floor = (np.abs(a) <= SD_ULP_FLOOR) & (np.abs(e) <= SD_ULP_FLOOR)
+        a = np.where(floor, 0.0, a)
+        e = np.where(floor, 0.0, e)
     np.testing.assert_allclose(a, e, rtol=1e-8, atol=1e-10, equal_nan=True, err_msg=path)
 
 
