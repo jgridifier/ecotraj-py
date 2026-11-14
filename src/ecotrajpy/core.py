@@ -127,8 +127,26 @@ def triangle_fix(a, b, c, add: bool = True):
 
 def angle_from_distances(dij, djk, dik, add: bool = True):
     """Change of direction (degrees; 0 = straight line, 180 = reversal) at the
-    middle point j of an ordered triplet, from the three pairwise distances."""
-    dij, djk, dik = triangle_fix(dij, djk, dik, add)
+    middle point j of an ordered triplet, from the three pairwise distances.
+
+    Black-box ecotraj 1.2.2 arithmetic: project j onto the line i->k,
+    then sum the two base angles. Only the upper cosine bound is clamped;
+    a cosine below -1, or coincident states, can therefore produce NaN.
+    ``float_power`` intentionally uses libm pow: multiplication can differ by
+    one ulp and change which exactly-collinear triplets are included.
+    """
+    a, b, c = (np.asarray(v, dtype=float) for v in (dij, djk, dik))
+    if add:
+        correction = np.maximum(np.maximum(a - (b + c), b - (a + c)),
+                                np.maximum(c - (a + b), 0.0))
+        a, b, c = a + correction, b + correction, c + correction
     with np.errstate(divide="ignore", invalid="ignore"):
-        cos_int = (dij**2 + djk**2 - dik**2) / (2 * dij * djk)
-    return 180.0 - np.degrees(np.arccos(cos_int))
+        projection = (np.float_power(a, 2) + np.float_power(c, 2)
+                      - np.float_power(b, 2)) / (2 * c)
+        first = projection / a
+        last = (c - projection) / b
+        if add:
+            first = np.minimum(first, 1.0)
+            last = np.minimum(last, 1.0)
+        ang = np.degrees(np.arccos(first) + np.arccos(last))
+    return np.where(np.asarray(dik) == 0, np.nan, ang) if ang.ndim else (np.nan if dik == 0 else ang)

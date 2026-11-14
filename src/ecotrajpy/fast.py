@@ -4,6 +4,9 @@ No fast-math: roundoff and invalid triangles follow the reference arithmetic.
 Without Numba, triplets are evaluated in bounded NumPy chunks.
 """
 from itertools import combinations, islice
+import ctypes
+import ctypes.util
+import os
 
 import numpy as np
 
@@ -12,6 +15,15 @@ try:
 except ImportError:
     njit = None
     prange = range
+
+
+if njit is not None:
+    # An indirect libm call prevents LLVM from replacing pow(x, 2) with x*x.
+    # Those differ by an ulp for some inputs, changing collinear NaN masks.
+    _libm = ctypes.CDLL("ucrtbase" if os.name == "nt" else ctypes.util.find_library("m"))
+    _pow = _libm.pow
+    _pow.argtypes = (ctypes.c_double, ctypes.c_double)
+    _pow.restype = ctypes.c_double
 
 
 def _directionality_kernel(C):
@@ -31,15 +43,16 @@ def _directionality_kernel(C):
             for k in range(j + 1, n):
                 a, b, c = d[i, j], d[j, k], d[i, k]
                 w = a + b
-                correction = max(2 * max(a, b, c) - (a + b + c), 0.0)
+                if a == 0 or b == 0 or c == 0:
+                    continue
+                correction = max(a - (b + c), b - (a + c), c - (a + b), 0.0)
                 a, b, c = a + correction, b + correction, c + correction
-                den = 2 * a * b
-                if den == 0:
+                projection = (_pow(a, 2.0) + _pow(c, 2.0) - _pow(b, 2.0)) / (2 * c)
+                first = min(projection / a, 1.0)
+                last = min((c - projection) / b, 1.0)
+                if first < -1 or last < -1 or np.isnan(first) or np.isnan(last):
                     continue
-                cosine = (a * a + b * b - c * c) / den
-                if abs(cosine) > 1 or np.isnan(cosine):
-                    continue
-                theta = 180.0 - np.arccos(cosine) * (180.0 / np.pi)
+                theta = (np.arccos(first) + np.arccos(last)) * (180.0 / np.pi)
                 numerator += w * (1 - theta / 180.0)
                 denominator += w
     return numerator / denominator if denominator != 0 else np.nan
@@ -63,12 +76,8 @@ def _directionality_numpy(C):
         i, j, k = np.asarray(chunk).T
         a, b, c = d[i, j], d[j, k], d[i, k]
         w = a + b
-        correction = np.maximum(2 * np.maximum(np.maximum(a, b), c) - (a + b + c), 0.0)
-        a, b, c = a + correction, b + correction, c + correction
-        with np.errstate(divide="ignore", invalid="ignore"):
-            cosine = (a**2 + b**2 - c**2) / (2 * a * b)
-            cosine = np.where(np.abs(cosine) > 1, np.nan, cosine)
-            theta = 180.0 - np.degrees(np.arccos(cosine))
+        from .core import angle_from_distances
+        theta = angle_from_distances(a, b, c)
         ok = ~np.isnan(theta)
         numerator += np.sum((w * (1 - theta / 180.0))[ok])
         denominator += np.sum(w[ok])

@@ -2,6 +2,14 @@
 
 Newest first. One entry per working session: date (ET), milestone, what passed, next step.
 
+## 2026-11-14 — Parity rounds 3–4 (after M4)
+- Directed-segment distance now follows De Cáceres et al. 2019 eqs. 8–10 (open-access manuscript found in the University of Lleida repository; penalty uses the nearer endpoint, as ecotraj does) [Claude].
+- ecotraj's angle arithmetic reproduced from black-box probes (sum of base angles, upper-bound clamp, NaN for coincident states); numba kernels mirror it; collinear 1-D/2-D R fixtures added [Codex, interrupted by its usage limit; finished by the lab lead].
+- Circular-sd ulp noise handled by a documented sd-only floor in the comparator (fixed a CI flake on Python 3.11).
+- Randomized oracle: **1,250 / 1,280 exact** (was 1,086). Remaining 30: non-metric 16, convergence row order 6, DS on one squared-Euclidean case 5, raw asymmetric SPD 3.
+- Re-checked: scout targets and sign-flip p unchanged; M4 exceedance counts identical on 10 replications with the new kernels.
+- Next: optional last 30 deviations; Extension 2 power curve for smaller swaps (would need its own prereg); daily check routine (parent).
+
 ## 2026-11-14 — M4 done (Extension 2 simulations, pre-registered run)
 - Ran exactly the pre-registered configuration (seed 2026111401, B=199, R=2000/1000, 10 cells) at commit c297c65 (M2 + Addendum 1); 1,415 s on 8 cores; 0 invalid replications.
 - P1 (increment split, re-projected sign flip): size 0.052 (T=40) and 0.053 (T=62), inside [0.030, 0.070]; power 0.997 at T=62 (0.937 at T=40). **Extension 2 PASSES.**
