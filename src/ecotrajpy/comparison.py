@@ -224,8 +224,6 @@ def trajectory_distances(x: Trajectories, distance_type="DSPD", symmetrization="
     elif distance_type == "SPD":
         for a in range(nt):
             for b in range(nt):
-                if a == b:
-                    continue
                 rb = np.flatnonzero(owner == b)
                 dp = _point_segment(d[np.ix_(idxs[a], ini[rb])], d[np.ix_(idxs[a], fin[rb])], d[ini[rb], fin[rb]][None, :], add)
                 M[a, b] = np.mean(np.min(dp, axis=1))
