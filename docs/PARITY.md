@@ -32,16 +32,16 @@ atol 1e-10. Plus 5 sign-flip fixtures (T = 20/40/62, 199 R draws each): all exac
 
 | Function (ecotraj name) | Oracle checks | Exact match (rtol 1e-8) | Known deviation | Categories |
 |---|---:|---:|---:|---|
-| `segment_distances` | 120 | 113 | 7 | DS 1, NONMETRIC 6 |
-| `trajectory_angles` | 240 | 201 | 39 | NONMETRIC 33, ULP_SD 6 |
+| `segment_distances` | 120 | 113 | 7 | NONMETRIC 6, DS 1 |
+| `trajectory_angles` | 240 | 237 | 3 | NONMETRIC 3 |
 | `trajectory_convergence` | 120 | 112 | 8 | CONV_ROWORDER 6, NONMETRIC 2 |
-| `trajectory_directionality` | 80 | 72 | 8 | NONMETRIC 8 |
-| `trajectory_distances` | 480 | 468 | 12 | DS 4, SPD_ASYM 3, NONMETRIC 5 |
+| `trajectory_directionality` | 80 | 80 | 0 | — |
+| `trajectory_distances` | 480 | 468 | 12 | SPD_ASYM 3, NONMETRIC 5, DS 4 |
 | `trajectory_internal_variation` | 40 | 40 | 0 | — |
 | `trajectory_lengths` | 120 | 120 | 0 | — |
-| `trajectory_metrics` | 40 | 29 | 11 | NONMETRIC 11 |
+| `trajectory_metrics` | 40 | 40 | 0 | — |
 | `trajectory_speeds` | 40 | 40 | 0 | — |
-| **Total** | **1280** | **1195** | **85** | |
+| **Total** | **1280** | **1250** | **30** | |
 
 "Exact match" includes the 38 cases where ecotraj itself errors and ecotrajpy raises.
 Known deviations are listed one by one in `tests/known_deviations.json` and run as
@@ -49,12 +49,19 @@ non-strict xfail, so they stay visible in CI.
 
 | Category | What differs |
 |---|---|
-| DS | Directed-segment distance now follows De Cáceres et al. (2019) eqs. 8-10 (selector R(x_i) > R(x_i+1); penalty = L + distance of the nearer end point to the other segment, black-box verified), matching ecotraj on 39/40 cases (3,624 segment pairs). The remaining case (squared-Euclidean `case40`) is non-metric: the DS pairs differ where the correction constant interacts with the penalty term. |
-| NONMETRIC | Only on non-metric inputs (squared-Euclidean, Bray-Curtis). Reproduced: cosine clamped to [-1, 1] on corrected triplets (never NaN), NaN when d_ik = 0. Not reproduced: in near-degenerate (collinear after correction) triplets ecotraj returns 0, ~1e-6 deg (1-4 ulp from ±1) or 180 depending on its exact operation order; none of the ~60 operation orders tried reproduced more than about half of ~14,000 crafted probe triplets bit-for-bit; the rest differ by an ulp or two of the cosine. A sum-of-base-angles form explains ecotraj's NaN at d_ik = 0 and its precision on sharp turns but not the last bits. No Euclidean (or Aitchison/clr) input is affected. |
-| ULP_SD | Circular sd of a single angle: 1.49e-08 vs 0 (last-bit rounding of rho). |
-| CONV_ROWORDER | `trajectoryConvergence(type="multiple")` on rows not sorted by survey: ecotraj's result depends on row order in a way not identified (grouping rows with stride, or surveys in order of first appearance, each explain only 3 and 2 of the 6 cases); ours sorts by survey and equals ecotraj on sorted input. |
-| SPD_ASYM | Raw asymmetric SPD (`symmetrization=NULL`) on 3 cases: some directed entries differ by up to 5% though every symmetrized SPD matches. Not investigated further in round 3. |
+| DS (5) | Directed-segment distance now follows De Cáceres et al. (2019) eqs. 8–10 (open-access manuscript, University of Lleida repository), with the penalty using the nearer endpoint as ecotraj does; 102 of 107 fixed. The 5 left are all one squared-Euclidean case (case40: Dseg and four DSPD variants). |
+| NONMETRIC (16) | Only non-metric inputs (squared-Euclidean, Bray-Curtis). Round 4 reproduced ecotraj's angle arithmetic from black-box probes (project the middle point onto the outer side, sum the two base angles with acos, clamp only the upper cosine bound; NaN for coincident states), which fixed 56 of 72; the rest are segment/trajectory distances and convergence on corrected triangles. |
+| (sd floor) | Circular sd of a single angle is 0 or 1.49e-08 depending on last-bit rounding (platform dependent). The comparator treats sd values both ≤ sqrt(2·eps) as equal; no xfail needed. |
+| CONV_ROWORDER (6) | `trajectoryConvergence(type="multiple")` on rows not sorted by survey: ecotraj's tau depends on input row order (random row permutations change it); two candidate rules each explain only some cases. Ours sorts by survey and equals ecotraj on sorted input. |
+| SPD_ASYM (3) | Raw asymmetric SPD (`symmetrization=NULL`) on 3 cases: some directed entries differ by up to 5%, though every symmetrized SPD matches. |
 
 
 Everything the scout run and Extension 2 rely on (lengths, directionality on
 Euclidean/clr data, the sign-flip null, the increment split) matches exactly.
+
+### Round 3–4 additions (2026-11-14)
+- Exactly collinear paths (1-D and collinear 2-D): new R-oracle fixture `tests/fixtures/collinear_cases.json`
+  (`oracle/collinear_fixtures.R`), matched by the new angle arithmetic.
+- The numba kernels (`ecotrajpy.fast`) mirror the reference arithmetic; M4's pre-registered results were
+  re-checked with the new kernels on 10 replications (all five procedures' exceedance counts identical), and
+  the scout targets and sign-flip p-values are unchanged.

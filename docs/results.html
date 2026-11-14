@@ -2,7 +2,7 @@
 <title>ecotrajpy: results</title><link rel="stylesheet" href="style.css"></head><body>
 <nav><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="https://github.com/jgridifier/ecotraj-py">Repo</a></nav>
 <h1>Results</h1>
-<p class="sub">Updated 2026-11-14 (ET). Milestones M0–M4 done. Synthetic data only; scout-panel checks were run locally on data that is not in the repo.</p>
+<p class="sub">Updated 2026-11-14 (ET). Milestones M0–M4 done; parity round 3–4 merged. Synthetic data only; scout-panel checks were run locally on data that is not in the repo.</p>
 
 <h2>Headline</h2>
 <div class="box"><b>Extension 2 passes its pre-registered test.</b> The increment-level market/residual split with a re-projected sign-flip test held its false-positive rate at <b>0.052</b> (T = 40) and <b>0.053</b> (T = 62), inside the pre-set band [0.030, 0.070], and detected a planted orthogonal swap the size of the scout panel's <b>99.7%</b> of the time at T = 62 (93.7% at T = 40). The old level-residualization procedure missed both criteria (false-positive rate 0.001, power 0.013).</div>
@@ -16,7 +16,7 @@
 <tr><td>A residual sign-flip p (seed 20261112, 999 draws, R's draws replayed)</td><td class="n">0.008</td><td class="n ok">0.008 (null diff ≤ 8e-15)</td></tr>
 <tr><td>A market / E4 residual / E4 market sign-flip p</td><td class="n">0.918 / 0.365 / 0.928</td><td class="n ok">0.918 / 0.365 / 0.928</td></tr></table>
 <p>A randomized oracle suite (40 synthetic cases: Euclidean, squared-Euclidean and Bray-Curtis inputs; 1–5 trajectories; unequal lengths; shuffled rows; 1,280 checks at rtol 1e-8) is in CI. Full table and the list of remaining deviations: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/PARITY.md">PARITY.md</a>.</p>
-<p id="parity-count"><b>Exact matches: 1,092 of 1,280</b>; 188 documented deviations, being worked down in parity round 3 (directed-segment rule for obtuse pairs 107, degenerate triangles on non-metric input 72, convergence row order 6, raw asymmetric SPD 3). No deviation touches Euclidean/clr directionality, the sign-flip null or the increment split.</p>
+<p id="parity-count"><b>Exact matches: 1,250 of 1,280.</b> 30 documented deviations remain: 16 on non-metric inputs (squared-Euclidean / Bray-Curtis distances on corrected triangles), 6 from ecotraj's row-order dependence in the multi-trajectory convergence test, 5 directed-segment values on one squared-Euclidean case, 3 raw asymmetric SPD entries. Directionality, angles on metric data, lengths, speeds, internal variation and metrics match on every case.</p>
 
 <h2>2. Speed (Extension 1, M2)</h2>
 <p>Complete sign-flip test, 999 draws, five-run medians, synthetic clr random-walk panels.</p>
