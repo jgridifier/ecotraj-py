@@ -2,7 +2,7 @@
  "_categories": {
   "DS": "Directed-segment distance (De Caceres et al. 2019) for obtuse segment pairs: acute pairs match Hausdorff exactly, but the rule ecotraj uses to pick the penalty term for obtuse pairs was not identified from documentation and black-box probing. DSPD inherits it.",
   "NONMETRIC": "Non-metric input (squared-Euclidean, Bray-Curtis): after the local additive triangle correction some triplets become exactly collinear, and ecotraj's output there (NaN, 0, ~1e-6 deg or 180) depends on last-bit floating-point arithmetic we did not reproduce.",
-  "ULP_SD": "Circular sd of a trajectory with a single angle: R returns 1.49e-08 or 0 depending on last-bit rounding of rho; true value 0.",
+  "ULP_SD": "Circular sd of a trajectory with a single angle: true value 0; R and numpy return 0 or 1.49e-08 depending on last-bit rounding of rho, and the result differs between platforms (local vs CI).",
   "CONV_ROWORDER": "trajectoryConvergence(type='multiple') on rows not sorted by survey: ecotraj's result depends on input row order (apparent R-side ordering issue); ours sorts by survey and equals ecotraj on sorted input.",
   "SPD_ASYM": "SPD with symmetrization=NULL (raw asymmetric matrix) on 3 of 40 cases: individual directed entries differ by up to 5%, although the symmetrized (mean/min/max) SPD values match ecotraj. Direction convention for some entries not identified."
  },
