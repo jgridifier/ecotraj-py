@@ -127,8 +127,18 @@ def triangle_fix(a, b, c, add: bool = True):
 
 def angle_from_distances(dij, djk, dik, add: bool = True):
     """Change of direction (degrees; 0 = straight line, 180 = reversal) at the
-    middle point j of an ordered triplet, from the three pairwise distances."""
-    dij, djk, dik = triangle_fix(dij, djk, dik, add)
+    middle point j of an ordered triplet, from the three pairwise distances.
+
+    Black-box behaviour of ecotraj: a triplet that needed the additive correction
+    never yields NaN (the cosine is clamped to [-1, 1]), whereas an uncorrected
+    triplet whose cosine rounds beyond +-1 gives NaN; d_ik = 0 gives NaN.
+    """
+    dij, djk, dik = (np.asarray(v, dtype=float) for v in (dij, djk, dik))
+    a, b, c = triangle_fix(dij, djk, dik, add)
     with np.errstate(divide="ignore", invalid="ignore"):
-        cos_int = (dij**2 + djk**2 - dik**2) / (2 * dij * djk)
-    return 180.0 - np.degrees(np.arccos(cos_int))
+        cos_int = (a**2 + b**2 - c**2) / (2 * a * b)
+        if add:
+            corrected = (a != dij) | (b != djk) | (c != dik)
+            cos_int = np.where(corrected, np.clip(cos_int, -1.0, 1.0), cos_int)
+        ang = 180.0 - np.degrees(np.arccos(cos_int))
+    return np.where(dik == 0, np.nan, ang) if ang.ndim else (np.nan if dik == 0 else ang)

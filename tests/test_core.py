@@ -223,8 +223,12 @@ def test_directionality_permutation_pvalue(x):
 def test_directionality_straight_line_and_reversal():
     t = np.arange(6.0)[:, None] * np.array([[1.0, 0.0]])
     assert directionality_coords(t) == pytest.approx(1.0)
+    back = np.array([[0, 0], [1, 0], [0.5, 0], [0.25, 0.0]])
+    assert directionality_coords(back) < 0.2
+    # returning to exactly the same state: d_ik = 0 gives NaN angles (and NaN
+    # directionality) in ecotraj 1.2.2, observed black-box
     zig = np.array([[0, 0], [1, 0], [0, 0], [1, 0.0]])
-    assert directionality_coords(zig) < 0.6
+    assert np.isnan(directionality_coords(zig))
 
 
 def test_clr():
