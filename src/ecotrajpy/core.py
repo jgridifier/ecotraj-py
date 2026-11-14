@@ -131,5 +131,4 @@ def angle_from_distances(dij, djk, dik, add: bool = True):
     dij, djk, dik = triangle_fix(dij, djk, dik, add)
     with np.errstate(divide="ignore", invalid="ignore"):
         cos_int = (dij**2 + djk**2 - dik**2) / (2 * dij * djk)
-    cos_int = np.where(np.abs(cos_int) > 1, np.nan, cos_int)  # impossible triangle
     return 180.0 - np.degrees(np.arccos(cos_int))

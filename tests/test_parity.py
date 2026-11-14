@@ -81,10 +81,19 @@ def _compare(actual, expected, pool, path):
         _numeric(np.atleast_1d(actual), _sequence(expected["data"]), path)
 
 
-PARAMS = [
-    pytest.param(case, output, id=f"{case['id']}/{output['id']}")
-    for case in ORACLE["cases"] for output in case["outputs"]
-]
+# Documented, categorized deviations from ecotraj 1.2.2 (see tests/known_deviations.json
+# and the parity table on the docs site). Marked xfail (non-strict) so they stay visible.
+KNOWN = json.loads((Path(__file__).parent / "known_deviations.json").read_text())
+
+
+def _param(case, output):
+    pid = f"{case['id']}/{output['id']}"
+    cat = KNOWN["ids"].get(pid)
+    marks = [pytest.mark.xfail(reason=f"known deviation {cat}: {KNOWN['_categories'][cat]}", strict=False)] if cat else []
+    return pytest.param(case, output, id=pid, marks=marks)
+
+
+PARAMS = [_param(case, output) for case in ORACLE["cases"] for output in case["outputs"]]
 
 
 @pytest.mark.parametrize("case,output", PARAMS)
