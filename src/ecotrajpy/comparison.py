@@ -91,9 +91,8 @@ def segment_distances(x: Trajectories, distance_type="directed-segment", add=Tru
 
     PPA follows Lee et al. (2007) with parallel/angle terms evaluated from the
     triangles formed by the endpoints (see ``_ppa_pair``). The directed-segment
-    distance equals the Hausdorff distance unless the segments form an obtuse
-    angle; in that case ecotraj adds a direction penalty whose exact form is only
-    partly reproduced here (see ``_directed_segment``).
+    distance is the Hausdorff distance with a direction penalty for end points
+    whose projection runs against the other segment (see ``_directed_segment``).
     """
     d = x.d
     ini, fin, _, labels = _segments(x)
@@ -127,31 +126,27 @@ def _obtuse(d, ini, fin, i, j):
 
 
 def _directed_segment(d, ini, fin, L, H, pi, pf, add):
-    """Directed-segment distance.
+    """Directed-segment distance, De Cáceres et al. (2019) eqs. 8-10.
 
-    Equal to the Hausdorff distance when the angle between segments is < 90
-    degrees (exact, verified against ecotraj). For obtuse angles ecotraj adds a
-    penalty; empirically (about 85% of random 2D cases, to 1e-6) it is
-    max(H, F2, F3) with F2 = L2 + (distance of the nearest endpoint of S2 to S1) and
-    F3 = L1 + (distance of the nearest endpoint of S1 to S2), applied only when some
-    endpoint of one segment projects inside the other. This is an approximation.
+    D_DS(si, sj) = max{Dps(x_i, sj), D'ps(x_i+1, sj), Dps(x_j, si), D'ps(x_j+1, si)}
+    where D'ps(x_i+1, sj) = Dps(x_i+1, sj) if R(x_i, sj) <= R(x_i+1, sj) (R is the
+    relative position, 0..1, of the projection on the segment; 0 / 1 when it falls
+    beyond the initial / final end point) and otherwise a penalty equal to the
+    segment length plus the distance of the nearer end point of si to sj,
+    min(Dps(x_i, sj), Dps(x_i+1, sj)) + L(si). (The paper writes Dps(x_i, sj) + L(si);
+    the min form is what ecotraj 1.2.2 computes, established by black-box probing.)
+    ``pi[p, s]`` / ``pf[p, s]`` are Dps of the initial / final point of segment p
+    to segment s.
     """
-    n = len(L)
-    ti, _, _, _ = _point_segment_geometry(d[np.ix_(ini, ini)], d[np.ix_(ini, fin)], L[None, :], add)
-    tf, _, _, _ = _point_segment_geometry(d[np.ix_(fin, ini)], d[np.ix_(fin, fin)], L[None, :], add)
-    inside = lambda t, k: bool(0 <= t <= L[k])  # noqa: E731
-    out = H.copy()
-    for i in range(n):
-        for j in range(i + 1, n):
-            if not _obtuse(d, ini, fin, i, j):
-                continue
-            # S1 = i (A, B), S2 = j (C, D); ti[x, s]: initial point of x onto segment s
-            if not (inside(ti[i, j], j) or inside(tf[i, j], j) or inside(ti[j, i], i) or inside(tf[j, i], i)):
-                continue
-            F2 = L[j] + min(pi[j, i], pf[j, i])
-            F3 = L[i] + min(pi[i, j], pf[i, j])
-            out[j, i] = out[i, j] = max(H[i, j], F2, F3)
-    return out
+    def rel(points):
+        t, _, _, c = _point_segment_geometry(d[np.ix_(points, ini)], d[np.ix_(points, fin)], L[None, :], add)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            r = np.where(t <= 0, 0.0, np.where(t >= c, 1.0, t / c))
+        return np.where(L[None, :] == 0, 0.0, r)
+    ri, rf = rel(ini), rel(fin)  # R of initial / final point of segment p onto segment s
+    fin_mod = np.where(ri > rf, np.minimum(pi, pf) + L[:, None], pf)  # D'ps(x_p+1, s)
+    T = np.maximum(pi, fin_mod)  # row p, column s: end points of p against s
+    return np.maximum(T, T.T)
 
 
 def _lehmer(x, y):

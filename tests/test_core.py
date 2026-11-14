@@ -130,14 +130,13 @@ _DS_R = F([0.0000000000, 1.2041594579, 2.2360679775, 1.3152946438, 2.1633307653,
 def test_segment_distances_directed_nonobtuse():
     # ecotraj::segmentDistances(x)$Dseg. For segment pairs whose angle is < 90 deg
     # the directed-segment distance equals the Hausdorff distance (exact match);
-    # the obtuse-pair penalty is only approximated (see xfail test below).
+    # the obtuse-pair penalty is covered by the full test below.
     r = segment_distances(x_()), segment_distances(x_(), "Hausdorff")
     assert r[0]["Dseg"].index[0] == "A[1-2]" and r[0]["Dseg"].index[-1] == "C[3-4]"
     ang = _seg_cos(x_()) >= 0
     close(r[0]["Dseg"].values[ang], _DS_R[ang])
 
 
-@pytest.mark.xfail(reason="obtuse-angle directed-segment penalty only approximated", strict=False)
 def test_segment_distances_directed_full():
     close(segment_distances(x_())["Dseg"].values, _DS_R)
 
@@ -151,7 +150,6 @@ def test_segment_distances_hausdorff(x):
     close(r["Dinifin"].values, F([1.1180339887, 0.0000000000, 1.2041594579, 0.7071067812, 1.3152946438, 2.0615528128, 1.8027756377, 1.0770329614, 0.7280109889, 2.2360679775, 1.2041594579, 0.0000000000, 1.8027756377, 1.7204650534, 2.2135943621, 1.4142135624, 1.2041594579, 0.5099019514, 3.3541019662, 2.2360679775, 1.3601470509, 2.5495097568, 1.8248287591, 1.8027756377, 2.6925824036, 2.5612496950, 1.7691806013, 2.1633307653, 1.3152946438, 1.7204650534, 1.0630145813, 0.0000000000, 0.7615773106, 2.9120439557, 2.3086792761, 1.5811388301, 2.9154759474, 2.0615528128, 2.2135943621, 1.8027756377, 0.7615773106, 0.0000000000, 3.5355339059, 3.0016662040, 2.2090722034, 3.4058772732, 2.3345235060, 1.8439088915, 2.4186773245, 1.4560219779, 1.1401754251, 3.2557641192, 2.9546573405, 2.1023796042, 1.4866068747, 1.0770329614, 1.2041594579, 1.7492855685, 2.3086792761, 3.0016662040, 0.7810249676, 0.0000000000, 0.8544003745, 1.7262676502, 0.7280109889, 0.5099019514, 1.3892443989, 1.5811388301, 2.2090722034, 1.3341664064, 0.8544003745, 0.0000000000, 1.2727922061, 0.4123105626, 1.3928388277, 0.4123105626, 0.9486832981, 1.7088007491, 2.1954498400, 1.4866068747, 1.0000000000], (9, 9)))
 
 
-@pytest.mark.xfail(reason="depends on approximated obtuse directed-segment distance", strict=False)
 def test_trajectory_distances_dspd(x):
     # ecotraj::trajectoryDistances(x) and symmetrization=NULL
     close(trajectory_distances(x).values, F([0.0000000000, 1.6252554955, 1.3843735514, 1.6252554955, 0.0000000000, 1.9234707948, 1.3843735514, 1.9234707948, 0.0000000000], (3, 3)))
