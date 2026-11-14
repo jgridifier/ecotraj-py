@@ -26,7 +26,7 @@ CELLS = [("i", 40), ("i", 62), ("ii", 40), ("ii", 62), ("i-b", 40), ("i-b", 62),
 PRIMARY = {"i", "ii"}
 PROCS = ["P1", "P1n", "L", "W", "Mk"]
 COLUMNS = (["rep"] + [f"{p}_count" for p in PROCS] + [f"{p}_p" for p in PROCS]
-           + [f"{p}_stat" for p in PROCS]
+           + [f"{p}_stat" for p in PROCS] + [f"{p}_valid" for p in PROCS]
            + ["realized_share", "mk_drift_to_noise", "M1_retained", "net_disp_u"])
 
 
@@ -43,10 +43,15 @@ def one_rep(args):
     signs = draw_signs(rng, B_DRAWS, T - 1)       # drawn after all DGP draws
     out = run_procedures(sim["S"], sim["X"], signs)
     info = out["info"]
-    net = float(info["E"].sum(axis=0) @ sim["u"]) if sim["u"] is not None else np.nan
-    row = [r] + [out[p]["count"] for p in PROCS] + [out[p]["p"] for p in PROCS] \
-        + [out[p]["stat"] for p in PROCS] \
-        + [sim["realized_share"], info["mk_drift_to_noise"], info["M1_retained"], net]
+    # retained-drift fraction and net displacement along u: scenario ii only (NaN elsewhere)
+    ii = scn == "ii" and sim["u"] is not None
+    net = float(info["E"].sum(axis=0) @ sim["u"]) if ii else np.nan
+    retained = info["M1_retained"] if ii else np.nan
+    nan = float("nan")
+    row = [r] + [out[p]["count"] if out[p]["valid"] else nan for p in PROCS] \
+        + [out[p]["p"] for p in PROCS] + [out[p]["stat"] for p in PROCS] \
+        + [int(out[p]["valid"]) for p in PROCS] \
+        + [sim["realized_share"], info["mk_drift_to_noise"], retained, net]
     return row
 
 

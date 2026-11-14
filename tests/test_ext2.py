@@ -130,3 +130,119 @@ def test_dgp_ar_stationary_init_and_A_not_centred():
     assert np.abs(A.mean(axis=0)).max() > 1e-8
     np.testing.assert_allclose(np.diff(s["X"], axis=0), A, atol=1e-12)
     assert np.all(s["X"][0] == 0)
+
+
+# ---------------------------------------------------------------- literal count / validity
+def test_exceed_count_is_literal():
+    obs = 0.5
+    null = np.array([0.5, 0.5 - 1e-13, 0.5 + 1e-13, 0.4])
+    assert ext2.exceed_count(obs, null) == 2          # no tolerance: 0.5 - 1e-13 is not counted
+
+
+def test_nonfinite_stat_is_invalid_not_rejection():
+    path = np.vstack([np.zeros(3), np.cumsum(np.random.default_rng(0).standard_normal((6, 3)), axis=0)])
+    signs = ext2.draw_signs(np.random.default_rng(1), 20, 6)
+    ok = ext2.path_test(path, signs)
+    assert ok["valid"] and 0 <= ok["count"] <= 20
+    bad = path.copy()
+    bad[3, 0] = np.nan
+    t = ext2.path_test(bad, signs)
+    assert t["valid"] is False and t["count"] is None and np.isnan(t["p"])
+    flat = ext2.path_test(np.zeros((7, 3)), signs)      # every triple degenerate -> non-finite statistic
+    assert flat["valid"] == bool(np.isfinite(flat["stat"])) and (flat["valid"] or flat["count"] is None)
+
+
+# ---------------------------------------------------------------- summarize validation
+import json  # noqa: E402
+
+import summarize as sm  # noqa: E402
+
+_PROCS = sm.PROCS
+
+
+def _write_cell(rd, scn, T, R, rej_frac, rng, reps=None, bad_count=False):
+    cols = ["rep"] + [f"{p}_count" for p in _PROCS] + [f"{p}_p" for p in _PROCS] \
+        + [f"{p}_stat" for p in _PROCS] + [f"{p}_valid" for p in _PROCS] \
+        + ["realized_share", "mk_drift_to_noise", "M1_retained", "net_disp_u"]
+    rows = []
+    for r in range(R):
+        cnt = [int(rng.integers(0, 9)) if rng.random() < rej_frac else int(rng.integers(10, 200))
+               for _ in _PROCS]
+        if bad_count:
+            cnt[0] = 250
+        row = [r if reps is None else reps[r]] + cnt + [(1 + c) / 200 for c in cnt] \
+            + [0.1] * 5 + [1] * 5 + [0.35, 1.0, 0.9 if scn == "ii" else np.nan,
+                                      0.1 if scn == "ii" else np.nan]
+        rows.append(row)
+    np.savetxt(rd / f"{scn}_T{T}.csv", np.array(rows), delimiter=",", header=",".join(cols),
+               comments="", fmt="%.10g")
+
+
+def _synthetic(rd, rej_i=0.05, rej_ii=0.9, small=None, skip=None, meta_over=None):
+    rng = np.random.default_rng(0)
+    meta = dict(master_seed=2026111401, B=199, preregistered_configuration=True, cells={})
+    for scn, T in sm.ORDER:
+        R = sm.expected_R(scn) if small is None else small
+        meta["cells"][f"{scn}_T{T}"] = dict(R=R)
+        if (scn, T) == skip:
+            continue
+        _write_cell(rd, scn, T, R, rej_ii if scn == "ii" else rej_i, rng)
+    meta.update(meta_over or {})
+    (rd / "run_meta.json").write_text(json.dumps(meta))
+
+
+def _run(tmp_path):
+    out = sm.summarize(tmp_path, tmp_path / "s.json", tmp_path / "s.md")
+    return out, (tmp_path / "s.md").read_text()
+
+
+def test_summary_valid_run_gets_verdict(tmp_path):
+    _synthetic(tmp_path)
+    out, md = _run(tmp_path)
+    assert out["binding"] and "DEVELOPMENT RUN" not in md
+    assert "Criterion 1" in md and "SECONDARY MISSES" not in md
+
+
+def test_summary_dev_run_banner_no_verdict(tmp_path):
+    _synthetic(tmp_path, small=3, meta_over=dict(preregistered_configuration=False, master_seed=1))
+    out, md = _run(tmp_path)           # also exercises tiny CSVs
+    assert not out["binding"] and "DEVELOPMENT RUN - NOT A PREREGISTERED RESULT" in md
+    assert "Verdict" not in md and out["criteria"].startswith("withheld")
+
+
+def test_summary_one_row_csv(tmp_path):
+    _synthetic(tmp_path, small=1, meta_over=dict(preregistered_configuration=False))
+    out, _ = _run(tmp_path)
+    assert out["cells"]["i/40"]["R"] == 1
+
+
+def test_summary_missing_cell_and_bad_counts(tmp_path):
+    _synthetic(tmp_path, skip=("ii", 40))
+    out, md = _run(tmp_path)
+    assert not out["binding"] and any("ii/40" in x for x in out["integrity_problems"])
+    assert "Verdict" not in md
+
+
+def test_summary_integrity_checks(tmp_path):
+    _synthetic(tmp_path)
+    rng = np.random.default_rng(1)
+    _write_cell(tmp_path, "i", 40, 2000, 0.05, rng, bad_count=True)
+    _write_cell(tmp_path, "i", 62, 2000, 0.05, rng, reps=[0] * 2000)
+    out, _ = _run(tmp_path)
+    probs = " ".join(out["integrity_problems"])
+    assert "not integers in [0, 199]" in probs and "not unique" in probs and not out["binding"]
+
+
+def test_summary_invalid_reps_excluded_from_rates(tmp_path):
+    d = {"P1_count": np.array([0.0, np.nan, 50.0, 3.0]), "P1_valid": np.array([1, 0, 1, 1])}
+    r = sm.rate(d, "P1")
+    assert (r["rejections"], r["R"], r["invalid"]) == (2, 3, 1)
+
+
+def test_summary_reports_secondary_misses_and_scout_sentence(tmp_path):
+    _synthetic(tmp_path, rej_i=0.05, rej_ii=0.95)
+    rng = np.random.default_rng(2)
+    _write_cell(tmp_path, "i-c", 40, 1000, 0.2, rng)
+    out, md = _run(tmp_path)
+    assert out["binding"] and "SECONDARY MISSES: i-c/40" in md
+    assert "scout's diagnosis was not reproduced" in md or not out["criteria"]["L"]["passes_both"]

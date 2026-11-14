@@ -17,7 +17,6 @@ except ImportError:  # pragma: no cover
 
 B_DRAWS = 199
 ALPHA_COUNT = 9          # reject iff #{null >= obs} <= 9  (p <= 0.05 with B = 199)
-TIE_TOL = 1e-12          # roundoff tolerance when comparing null to obs
 
 
 # ---------------------------------------------------------------- compositional
@@ -123,8 +122,8 @@ def null_values(c0, inc, signs, Mmat=None):
 
 
 def exceed_count(obs, null):
-    """#{null >= obs}, tolerant to roundoff (identity / full-reversal draws tie with obs)."""
-    return int(np.sum(np.asarray(null) >= obs - TIE_TOL))
+    """Literal #{null >= obs} (prereg section 3); no tolerance."""
+    return int(np.sum(np.asarray(null) >= obs))
 
 
 def path_test(path, signs, Mmat=None, inc=None):
@@ -134,8 +133,11 @@ def path_test(path, signs, Mmat=None, inc=None):
         inc = np.diff(path, axis=0)
     obs = directionality(path)
     null = null_values(path[0], inc, signs, Mmat)
+    if not (np.isfinite(obs) and np.all(np.isfinite(null)) and np.all(np.isfinite(path))):
+        # invalid replication: never counted as a rejection or a non-rejection
+        return dict(stat=obs, count=None, p=np.nan, null=null, valid=False)
     n = exceed_count(obs, null)
-    return dict(stat=obs, count=n, p=(1 + n) / (1 + len(signs)), null=null)
+    return dict(stat=obs, count=n, p=(1 + n) / (1 + len(signs)), null=null, valid=True)
 
 
 # ---------------------------------------------------------------- procedures
