@@ -16,7 +16,7 @@
 <tr><td>A residual sign-flip p (seed 20261112, 999 draws, R's draws replayed)</td><td class="n">0.008</td><td class="n ok">0.008 (null diff ≤ 8e-15)</td></tr>
 <tr><td>A market / E4 residual / E4 market sign-flip p</td><td class="n">0.918 / 0.365 / 0.928</td><td class="n ok">0.918 / 0.365 / 0.928</td></tr></table>
 <p>A randomized oracle suite (40 synthetic cases: Euclidean, squared-Euclidean and Bray-Curtis inputs; 1–5 trajectories; unequal lengths; shuffled rows; 1,280 checks at rtol 1e-8) is in CI. Full table and the list of remaining deviations: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/PARITY.md">PARITY.md</a>.</p>
-<p id="parity-count"><b>Exact matches: 1,250 of 1,280.</b> 30 documented deviations remain: 16 on non-metric inputs (squared-Euclidean / Bray-Curtis distances on corrected triangles), 6 from ecotraj's row-order dependence in the multi-trajectory convergence test, 5 directed-segment values on one squared-Euclidean case, 3 raw asymmetric SPD entries. Directionality, angles on metric data, lengths, speeds, internal variation and metrics match on every case.</p>
+<p id="parity-count"><b>Exact matches: 1,254 of 1,280.</b> 26 documented deviations remain: 15 on non-metric inputs (squared-Euclidean / Bray-Curtis distances on corrected triangles), 6 from ecotraj's row-order dependence in the multi-trajectory convergence test, and 5 directed-segment values on one squared-Euclidean case. Directionality, angles, lengths, speeds, internal variation, metrics and SPD match on every case.</p>
 
 <h2>2. Speed (Extension 1, M2)</h2>
 <p>Complete sign-flip test, 999 draws, five-run medians, synthetic clr random-walk panels.</p>
