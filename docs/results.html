@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ecotrajpy: results</title><link rel="stylesheet" href="style.css"></head><body>
+<nav><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="https://github.com/jgridifier/ecotraj-py">Repo</a></nav>
+<h1>Results</h1>
+<p class="sub">Updated 2026-11-14 (ET). Milestones M0–M4 done. Synthetic data only; scout-panel checks were run locally on data that is not in the repo.</p>
+
+<h2>Headline</h2>
+<div class="box"><b>Extension 2 passes its pre-registered test.</b> The increment-level market/residual split with a re-projected sign-flip test held its false-positive rate at <b>0.052</b> (T = 40) and <b>0.053</b> (T = 62), inside the pre-set band [0.030, 0.070], and detected a planted orthogonal swap the size of the scout panel's <b>99.7%</b> of the time at T = 62 (93.7% at T = 40). The old level-residualization procedure missed both criteria (false-positive rate 0.001, power 0.013).</div>
+
+<h2>1. Replication: parity with ecotraj 1.2.2 (M1)</h2>
+<p>All the numbers the 2026-11-12 scout run reported are reproduced:</p>
+<table><tr><th>Quantity</th><th>ecotraj</th><th>ecotrajpy</th></tr>
+<tr><td>Panel A directionality (T=40, 14 parts)</td><td class="n">0.577301</td><td class="n ok">0.577301</td></tr>
+<tr><td>Panel E4 directionality (T=62, 4 parts)</td><td class="n">0.431413</td><td class="n ok">0.431413</td></tr>
+<tr><td>A residual-increment directionality</td><td class="n">0.595092</td><td class="n ok">0.595092</td></tr>
+<tr><td>A residual sign-flip p (seed 20261112, 999 draws, R's draws replayed)</td><td class="n">0.008</td><td class="n ok">0.008 (null diff ≤ 8e-15)</td></tr>
+<tr><td>A market / E4 residual / E4 market sign-flip p</td><td class="n">0.918 / 0.365 / 0.928</td><td class="n ok">0.918 / 0.365 / 0.928</td></tr></table>
+<p>A randomized oracle suite (40 synthetic cases: Euclidean, squared-Euclidean and Bray-Curtis inputs; 1–5 trajectories; unequal lengths; shuffled rows; 1,280 checks at rtol 1e-8) is in CI. Full table and the list of remaining deviations: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/PARITY.md">PARITY.md</a>.</p>
+<p id="parity-count"><b>Exact matches: 1,092 of 1,280</b>; 188 documented deviations, being worked down in parity round 3 (directed-segment rule for obtuse pairs 107, degenerate triangles on non-metric input 72, convergence row order 6, raw asymmetric SPD 3). No deviation touches Euclidean/clr directionality, the sign-flip null or the increment split.</p>
+
+<h2>2. Speed (Extension 1, M2)</h2>
+<p>Complete sign-flip test, 999 draws, five-run medians, synthetic clr random-walk panels.</p>
+<table><tr><th>Panel (T × parts)</th><th>R ecotraj loop*</th><th>Python reference</th><th>numba, 1 thread</th><th>numba, 8 threads</th></tr>
+<tr><td>62 × 14 (scout scale)</td><td class="n">98.8 s*</td><td class="n">8.89 s</td><td class="n">0.593 s</td><td class="n">0.106 s</td></tr>
+<tr><td>120 × 50 (larger panel)</td><td class="n">614 s*</td><td class="n">74.1 s</td><td class="n">3.21 s</td><td class="n">0.424 s</td></tr></table>
+<p>*R times are a naive user loop (<code>dist</code> → <code>defineTrajectories</code> → <code>trajectoryDirectionality</code> per draw), extrapolated linearly from warm batches. numba results equal the reference to ≤ 1e-12; first-call JIT compile ≈ 1.2 s. Details: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/bench/README.md">bench/README.md</a>.</p>
+
+<h2>3. Extension 2: pre-registered simulations (M3, M4)</h2>
+<p>The <a href="https://github.com/jgridifier/ecotraj-py/blob/main/prereg/EXT2_PREREG.md">pre-registration</a> was merged before any simulation (reviewed by a second agent; one dated addendum, also before the run). Design: 14-part compositions, 4 market covariates (one trending), market ≈ 35% of step energy; scenario (i) all directed motion is market-driven; scenario (ii) adds a part-1-vs-part-2 swap of 0.10 clr per step, orthogonal to every market loading. B = 199 sign flips, α = 0.05, R = 2000 (primary) / 1000 (secondary) replications, seed 2026111401.</p>
+<table><tr><th>Cell</th><th>P1 (increment split, re-projected)</th><th>P1-naive (scout m1b)</th><th>L (level procedure)</th><th>W (whole path)</th></tr>
+<tr><td>(i) null, T=40</td><td class="n ok">0.052 [0.043, 0.063]</td><td class="n">0.068</td><td class="n bad">0.001</td><td class="n">0.011</td></tr>
+<tr><td>(i) null, T=62</td><td class="n ok">0.053 [0.044, 0.064]</td><td class="n">0.060</td><td class="n bad">0.001</td><td class="n">0.013</td></tr>
+<tr><td>(ii) swap, T=40</td><td class="n">0.937 [0.925, 0.947]</td><td class="n">0.948</td><td class="n">0.007</td><td class="n">0.765</td></tr>
+<tr><td>(ii) swap, T=62</td><td class="n ok">0.997 [0.993, 0.999]</td><td class="n">0.997</td><td class="n bad">0.013</td><td class="n">0.969</td></tr>
+<tr><td>(i-b) stationary levels, T=40 / 62</td><td class="n">0.000 / 0.000</td><td class="n">0.000 / 0.000</td><td class="n">0.000 / 0.000</td><td class="n">0.004 / 0.002</td></tr>
+<tr><td>(i-c) heavy tails, T=40 / 62</td><td class="n ok">0.046 / 0.047</td><td class="n">0.059 / 0.060</td><td class="n">0.001 / 0.000</td><td class="n">0.007 / 0.013</td></tr>
+<tr><td>(i-d) heteroskedastic, T=40 / 62</td><td class="n ok">0.040 / 0.038</td><td class="n">0.057 / 0.046</td><td class="n">0.000 / 0.000</td><td class="n">0.007 / 0.006</td></tr></table>
+<p>Rejection rates at α = 0.05 with Clopper-Pearson 95% intervals; green = meets its pre-registered criterion, red = misses.</p>
+<ul>
+<li><b>Verdict.</b> P1 meets criterion 1 (size band at both T) and criterion 2 (power ≥ 0.80 at T = 62): <span class="ok">Extension 2 passes</span>. L misses both. Paired McNemar on (ii, T = 62): P1 rejected where L did not in 1,966 replications, the reverse in 0, so the pre-registered statement "P1 has more power than L" is allowed.</li>
+<li><b>Secondary nulls.</b> P1 stays in band under heavy tails and market-linked heteroskedasticity, and is conservative (0.000) when residual levels are stationary, which the pre-registration allows.</li>
+<li><b>What the level procedure does.</b> It is not anti-conservative; it is blind. Regressing levels on trending covariates soaks up the persistent residual drift, which is the scout run's p = 0.994 failure, now shown on known truth.</li>
+<li><b>P1-naive</b> (no re-projection; exactly what the scout ran) is slightly liberal at T = 40 (0.068), which is why the re-projected version is the one to use.</li>
+<li><b>Caveat.</b> Power is near 1 at T = 62, so the planted effect (taken from the scout panel) was easy; this run does not map power for smaller swaps. It does not show the scout panel's residual walk is real, and no forecasting metric was computed.</li>
+<li><b>Provenance.</b> The full run was repeated after a numba cache fix, with all caches cleared; every output file was byte-identical. Three replications were also recomputed independently with the slow reference code. See <a href="https://github.com/jgridifier/ecotraj-py/blob/main/results/PROVENANCE.md">PROVENANCE.md</a> and <a href="https://github.com/jgridifier/ecotraj-py/blob/main/results/EXT2_RESULTS.md">EXT2_RESULTS.md</a>.</li></ul>
+
+<h2>4. How this was built</h2>
+<p>Implementation by the Claude Code CLI (core port, parity fixes, Extension 2 code) and the Codex CLI (R-oracle fixtures, parity suite, numba kernels, audits), each reviewing the other's work; checked against the oracle by the lab lead. Clean-room: ecotraj (GPL) was used only as a black box. Status log: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/STATUS.md">STATUS.md</a>.</p>
+</body></html>
