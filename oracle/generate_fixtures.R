@@ -104,7 +104,7 @@ for (i in seq_along(cases)) {
   cat("Generated", cases[[i]]$id, "\n")
 }
 write_json(list(metadata=c(metadata,list(seed=20261114L)),cases=cases),
-  file.path(outdir,"oracle_cases.json"), digits=NA, auto_unbox=TRUE, na="null", null="null", pretty=FALSE)
+  file.path(outdir,"oracle_cases.json"), digits=I(17), auto_unbox=TRUE, na="null", null="null", pretty=FALSE)
 
 set.seed(20261112)
 nsim <- 199L
@@ -131,7 +131,7 @@ for (i in seq_along(signcases)) {
   cat("Generated",signcases[[i]]$id,"\n")
 }
 write_json(list(metadata=c(metadata,list(seed=20261112L,nsim=nsim)),cases=signcases),
-  file.path(outdir,"signflip_cases.json"), digits=NA,auto_unbox=TRUE,na="null",null="null",pretty=FALSE)
+  file.path(outdir,"signflip_cases.json"), digits=I(17),auto_unbox=TRUE,na="null",null="null",pretty=FALSE)
 errors <- unlist(lapply(cases,function(case) vapply(Filter(function(o) o$status=="error",case$outputs),function(o) o$error,character(1))))
 cat("\nOracle errors:\n"); print(table(errors))
 cat("\nFixture bytes:\n"); print(file.info(file.path(outdir,c("oracle_cases.json","signflip_cases.json")))$size)
