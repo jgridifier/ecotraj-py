@@ -9,6 +9,7 @@ from __future__ import annotations
 import numpy as np
 
 from .fast import directionality_coords_fast
+from . import fast as _fast
 
 try:
     from numba import njit
@@ -97,11 +98,19 @@ def _null_dir_kernel(c0, inc):
             for t in range(steps):
                 total += inc[draw, t, q]
                 path[t + 1, q] = c0[q] + total
-        out[draw] = directionality_coords_fast(path)
+        out[draw] = _dir_point(path)
     return out
 
 
-null_dir_kernel = njit(cache=True)(_null_dir_kernel) if njit is not None else _null_dir_kernel
+# The jitted kernel calls fast's raw jitted directionality (not its Python wrapper).
+# cache=False: numba's on-disk cache does not track changes in callees, and a stale
+# cache is exactly what hid the wrapper change during the first M4 run.
+if njit is not None:
+    _dir_point = _fast._directionality_impl
+    null_dir_kernel = njit(cache=False)(_null_dir_kernel)
+else:
+    _dir_point = directionality_coords_fast
+    null_dir_kernel = _null_dir_kernel
 
 
 def directionality(path):
