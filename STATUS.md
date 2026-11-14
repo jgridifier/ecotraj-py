@@ -6,7 +6,8 @@ Newest first. One entry per working session: date (ET), milestone, what passed, 
 - Directed-segment distance now follows De Cáceres et al. 2019 eqs. 8–10 (open-access manuscript found in the University of Lleida repository; penalty uses the nearer endpoint, as ecotraj does) [Claude].
 - ecotraj's angle arithmetic reproduced from black-box probes (sum of base angles, upper-bound clamp, NaN for coincident states); numba kernels mirror it; collinear 1-D/2-D R fixtures added [Codex, interrupted by its usage limit; finished by the lab lead].
 - Circular-sd ulp noise handled by a documented sd-only floor in the comparator (fixed a CI flake on Python 3.11).
-- Randomized oracle: **1,250 / 1,280 exact** (was 1,086). Remaining 30: non-metric 16, convergence row order 6, DS on one squared-Euclidean case 5, raw asymmetric SPD 3.
+- Randomized oracle: **1,254 / 1,280 exact** (was 1,086). SPD diagonal now computed like R (fixed the 3 raw-asymmetric SPD and one more). Remaining 26: non-metric 15, convergence row order 6, DS on one squared-Euclidean case 5.
+- Both CLIs hit their usage limits at ~13:45 ET (Claude resets 3:40 PM, Codex 3:41 PM ET); the last 26 were not attempted further.
 - Re-checked: scout targets and sign-flip p unchanged; M4 exceedance counts identical on 10 replications with the new kernels.
 - Next: optional last 30 deviations; Extension 2 power curve for smaller swaps (would need its own prereg); daily check routine (parent).
 

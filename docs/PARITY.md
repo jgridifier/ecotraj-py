@@ -36,12 +36,12 @@ atol 1e-10. Plus 5 sign-flip fixtures (T = 20/40/62, 199 R draws each): all exac
 | `trajectory_angles` | 240 | 237 | 3 | NONMETRIC 3 |
 | `trajectory_convergence` | 120 | 112 | 8 | CONV_ROWORDER 6, NONMETRIC 2 |
 | `trajectory_directionality` | 80 | 80 | 0 | — |
-| `trajectory_distances` | 480 | 468 | 12 | SPD_ASYM 3, NONMETRIC 5, DS 4 |
+| `trajectory_distances` | 480 | 472 | 8 | DS 4, NONMETRIC 4 |
 | `trajectory_internal_variation` | 40 | 40 | 0 | — |
 | `trajectory_lengths` | 120 | 120 | 0 | — |
 | `trajectory_metrics` | 40 | 40 | 0 | — |
 | `trajectory_speeds` | 40 | 40 | 0 | — |
-| **Total** | **1280** | **1250** | **30** | |
+| **Total** | **1280** | **1254** | **26** | |
 
 "Exact match" includes the 38 cases where ecotraj itself errors and ecotrajpy raises.
 Known deviations are listed one by one in `tests/known_deviations.json` and run as
@@ -50,10 +50,10 @@ non-strict xfail, so they stay visible in CI.
 | Category | What differs |
 |---|---|
 | DS (5) | Directed-segment distance now follows De Cáceres et al. (2019) eqs. 8–10 (open-access manuscript, University of Lleida repository), with the penalty using the nearer endpoint as ecotraj does; 102 of 107 fixed. The 5 left are all one squared-Euclidean case (case40: Dseg and four DSPD variants). |
-| NONMETRIC (16) | Only non-metric inputs (squared-Euclidean, Bray-Curtis). Round 4 reproduced ecotraj's angle arithmetic from black-box probes (project the middle point onto the outer side, sum the two base angles with acos, clamp only the upper cosine bound; NaN for coincident states), which fixed 56 of 72; the rest are segment/trajectory distances and convergence on corrected triangles. |
+| NONMETRIC (15) | Only non-metric inputs (squared-Euclidean, Bray-Curtis). Round 4 reproduced ecotraj's angle arithmetic from black-box probes (project the middle point onto the outer side, sum the two base angles with acos, clamp only the upper cosine bound; NaN for coincident states), which fixed 56 of 72; the rest are segment/trajectory distances and convergence on corrected triangles. |
 | (sd floor) | Circular sd of a single angle is 0 or 1.49e-08 depending on last-bit rounding (platform dependent). The comparator treats sd values both ≤ sqrt(2·eps) as equal; no xfail needed. |
 | CONV_ROWORDER (6) | `trajectoryConvergence(type="multiple")` on rows not sorted by survey: ecotraj's tau depends on input row order (random row permutations change it); two candidate rules each explain only some cases. Ours sorts by survey and equals ecotraj on sorted input. |
-| SPD_ASYM (3) | Raw asymmetric SPD (`symmetrization=NULL`) on 3 cases: some directed entries differ by up to 5%, though every symmetrized SPD matches. |
+| (SPD, fixed) | The raw asymmetric SPD differences were rounding on the diagonal computation, now computed like R; all SPD checks match. |
 
 
 Everything the scout run and Extension 2 rely on (lengths, directionality on

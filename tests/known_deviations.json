@@ -2,8 +2,7 @@
  "_categories": {
   "DS": "Directed-segment distance on the squared-Euclidean (non-metric) case40: the rule from De Caceres et al. 2019 eqs. 8-10 (with ecotraj's min-endpoint penalty) matches 39/40 cases; on case40 the corrected-triangle quantities used for the relative position / penalty differ from ecotraj's. DSPD inherits it.",
   "NONMETRIC": "Non-metric input (squared-Euclidean, Bray-Curtis): after the local additive triangle correction some triplets become collinear to the last bit, and ecotraj's output there (0, ~1e-6 deg, 180, or NaN) depends on its exact floating-point operation order, which black-box probing (about 60 candidate orders on ~14,000 crafted triplets) did not reproduce bit-for-bit. Reproduced: clamp on corrected triplets, NaN for d_ik = 0.",
-  "CONV_ROWORDER": "trajectoryConvergence(type='multiple') on rows not sorted by survey: ecotraj's result depends on input row order (random permutations give different tau) but the rule was not identified (row stride matches 3/6 cases, first-appearance survey order 2/6); ours sorts by survey and equals ecotraj on sorted input.",
-  "SPD_ASYM": "SPD with symmetrization=NULL (raw asymmetric matrix) on 3 of 40 cases: individual directed entries differ by up to 5%, although the symmetrized (mean/min/max) SPD values match ecotraj. Direction convention for some entries not identified."
+  "CONV_ROWORDER": "trajectoryConvergence(type='multiple') on rows not sorted by survey: ecotraj's result depends on input row order (random permutations give different tau) but the rule was not identified (row stride matches 3/6 cases, first-appearance survey order 2/6); ours sorts by survey and equals ecotraj on sorted input."
  },
  "ids": {
   "case02_euclidean_5d_2sites/trajectory_convergence/multiple": "CONV_ROWORDER",
@@ -12,18 +11,14 @@
   "case10_euclidean_2d_5sites/trajectory_convergence/multiple": "CONV_ROWORDER",
   "case16_squared-euclidean_2d_1sites/segment_distances/PPA": "NONMETRIC",
   "case18_euclidean_14d_3sites/trajectory_convergence/multiple": "CONV_ROWORDER",
-  "case19_euclidean_2d_4sites/trajectory_distances/SPD-NULL": "SPD_ASYM",
   "case20_squared-euclidean_5d_5sites/segment_distances/PPA": "NONMETRIC",
   "case22_euclidean_2d_2sites/trajectory_convergence/multiple": "CONV_ROWORDER",
   "case24_squared-euclidean_14d_4sites/segment_distances/PPA": "NONMETRIC",
-  "case24_squared-euclidean_14d_4sites/trajectory_distances/SPD-NULL": "NONMETRIC",
   "case28_squared-euclidean_2d_3sites/trajectory_angles/all-TRUE": "NONMETRIC",
   "case28_squared-euclidean_2d_3sites/trajectory_angles/relative-TRUE": "NONMETRIC",
   "case28_squared-euclidean_2d_3sites/segment_distances/PPA": "NONMETRIC",
-  "case29_euclidean_5d_4sites/trajectory_distances/SPD-NULL": "SPD_ASYM",
   "case30_euclidean_14d_5sites/trajectory_convergence/multiple": "CONV_ROWORDER",
   "case34_euclidean_2d_4sites/trajectory_convergence/multiple": "CONV_ROWORDER",
-  "case34_euclidean_2d_4sites/trajectory_distances/SPD-NULL": "SPD_ASYM",
   "case40_squared-euclidean_2d_5sites/trajectory_angles/all-TRUE": "NONMETRIC",
   "case40_squared-euclidean_2d_5sites/trajectory_convergence/pairwise.asymmetric": "NONMETRIC",
   "case40_squared-euclidean_2d_5sites/segment_distances/directed-segment": "DS",
