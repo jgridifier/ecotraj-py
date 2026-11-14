@@ -163,4 +163,22 @@ establish that the scout panel's residual walk is real, and it says nothing abou
 
 ## Addenda
 
-(none)
+### Addendum 1 — 2026-11-14 (ET), before any pre-registered simulation was run
+
+Written after an independent audit (Codex) of the simulation code against this text, and before the
+pre-registered configuration was executed. No rejection rate from any run had been seen; only smoke runs
+with a development seed and at most 10 replications were executed, and their rates were not printed.
+
+1. **Statistic implementation.** §3 names `ecotrajpy.nulls.directionality_coords`. The run uses
+   `ecotrajpy.fast.directionality_coords_fast` / the numba null kernel instead, because the reference
+   implementation is about 86× slower and the pre-registered run would not finish in a session. The two
+   compute the same formula with the same triangle arithmetic; M2's tests show agreement to ≤ 1e-12 on
+   random paths (T = 3..70) and exact p-values on the R sign-flip fixtures. The comparison rule is
+   unchanged and literal: count = #{null ≥ obs}, reject iff count ≤ 9.
+2. **Zero-length legs.** §3 says θ := 0 when a leg has zero length. The implementation (like ecotraj)
+   instead drops such a triple from both sums. Under every pre-registered DGP this is a probability-zero
+   event; the run treats any non-finite statistic as an invalid replication (never a rejection) and the
+   number of invalid replications is reported per cell and procedure.
+3. **Retained-drift and displacement outputs** are recorded for scenario ii only, as §5 says.
+
+Nothing else changes: DGPs, constants, seed, B, R, procedures, and pass/fail criteria are as originally written.
