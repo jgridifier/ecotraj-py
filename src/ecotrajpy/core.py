@@ -129,16 +129,24 @@ def angle_from_distances(dij, djk, dik, add: bool = True):
     """Change of direction (degrees; 0 = straight line, 180 = reversal) at the
     middle point j of an ordered triplet, from the three pairwise distances.
 
-    Black-box behaviour of ecotraj: a triplet that needed the additive correction
-    never yields NaN (the cosine is clamped to [-1, 1]), whereas an uncorrected
-    triplet whose cosine rounds beyond +-1 gives NaN; d_ik = 0 gives NaN.
+    Black-box ecotraj 1.2.2 arithmetic: project j onto the line i->k,
+    then sum the two base angles. Only the upper cosine bound is clamped;
+    a cosine below -1, or coincident states, can therefore produce NaN.
+    ``float_power`` intentionally uses libm pow: multiplication can differ by
+    one ulp and change which exactly-collinear triplets are included.
     """
-    dij, djk, dik = (np.asarray(v, dtype=float) for v in (dij, djk, dik))
-    a, b, c = triangle_fix(dij, djk, dik, add)
+    a, b, c = (np.asarray(v, dtype=float) for v in (dij, djk, dik))
+    if add:
+        correction = np.maximum(np.maximum(a - (b + c), b - (a + c)),
+                                np.maximum(c - (a + b), 0.0))
+        a, b, c = a + correction, b + correction, c + correction
     with np.errstate(divide="ignore", invalid="ignore"):
-        cos_int = (a**2 + b**2 - c**2) / (2 * a * b)
+        projection = (np.float_power(a, 2) + np.float_power(c, 2)
+                      - np.float_power(b, 2)) / (2 * c)
+        first = projection / a
+        last = (c - projection) / b
         if add:
-            corrected = (a != dij) | (b != djk) | (c != dik)
-            cos_int = np.where(corrected, np.clip(cos_int, -1.0, 1.0), cos_int)
-        ang = 180.0 - np.degrees(np.arccos(cos_int))
-    return np.where(dik == 0, np.nan, ang) if ang.ndim else (np.nan if dik == 0 else ang)
+            first = np.minimum(first, 1.0)
+            last = np.minimum(last, 1.0)
+        ang = np.degrees(np.arccos(first) + np.arccos(last))
+    return np.where(np.asarray(dik) == 0, np.nan, ang) if ang.ndim else (np.nan if dik == 0 else ang)
