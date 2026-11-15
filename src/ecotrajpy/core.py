@@ -77,6 +77,10 @@ def define_trajectories(d, sites, surveys=None, times=None) -> Trajectories:
                 idx = np.flatnonzero(sites == s)
                 surveys[idx] = np.arange(1, len(idx) + 1)
     surveys = np.asarray(surveys)
+    if (surveys.dtype.kind not in "iuf"
+            or not np.all(np.isfinite(surveys))
+            or not np.all(surveys == np.floor(surveys))):
+        raise ValueError("'surveys' should be a numeric vector of integers")
     if times is None:
         times = surveys.astype(float)
     times = np.asarray(times, dtype=float)

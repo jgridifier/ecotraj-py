@@ -266,16 +266,18 @@ def trajectory_convergence(x: Trajectories, type="pairwise.asymmetric", add=True
     if nt < 2 and type != "multiple":
         raise ValueError("at least two trajectories are needed for pairwise convergence tests")
     if type == "multiple":
-        n = len(idxs[0])
-        if any(len(i) != n for i in idxs):
+        reference_times = np.unique(x.times[idxs[0]])
+        if any(not np.array_equal(np.unique(x.times[ix]), reference_times) for ix in idxs):
             raise ValueError("trajectories must be synchronous")
-        if any(not np.allclose(x.times[ix], x.times[idxs[0]]) for ix in idxs):
-            raise ValueError("trajectories must be synchronous")
+        # Public R-oracle observations: use times in the first site's input
+        # row order, without sorting. Match all rows by time, not by survey;
+        # repeated times contribute repeated tests of the same group.
+        order = x.times[x.sites == x.sites[0]]
         v = []
-        for k in range(n):
-            pts = np.array([ix[k] for ix in idxs])
+        for time in order:
+            pts = np.flatnonzero(x.times == time)
             sub = d[np.ix_(pts, pts)]
-            v.append(np.sum(sub**2) / 2 / nt / (nt - 1))
+            v.append(np.sum(sub**2) / 2 / len(pts) / (nt - 1))
         tau, p = _mk(v)
         return dict(tau=tau, p_value=p)
     tau = np.full((nt, nt), np.nan)
