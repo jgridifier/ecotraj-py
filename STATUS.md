@@ -2,6 +2,13 @@
 
 Newest first. One entry per working session: date (ET), milestone, what passed, next step.
 
+## 2026-11-15 — Parity round 6 (P1)
+- Convergence row order fixed: `trajectoryConvergence(type="multiple")` takes its Mann-Kendall axis from the first row's site's times in input-row order and groups rows by exact time value (found by Claude from black-box probes; Codex corrected it to times-based grouping, exact synchrony on sets of times and per-group scaling, and added an integer-surveys check like R's constructor). Checked against R: 240/240 + 240/240 independent shuffled probes (Codex), 40/40 more (Claude cross-review); new permanent R-oracle fixture `tests/test_convergence_roworder.py` (58 cases).
+- Randomized oracle: **1,260 / 1,280 exact** (was 1,254). All 6 CONV_ROWORDER cleared. Suite: 1,488 passed, 20 xfailed. No tolerance or comparator changed.
+- DS (5, case40) and NONMETRIC (15) not fixed: every differing element sits on a corrected triplet that is exactly collinear, where ecotraj's result follows the sign of ~1e-14 rounding noise (NaN vs finite, corrected vs uncorrected endpoint distance, Kendall ties). No deterministic rule found (6,000 + 3,000 random 4-point R probes); documented element by element in docs/PARITY.md as an R floating-point quirk.
+- ROADMAP stale counts fixed (1,250 / 30 -> 1,260 / 20); results page updated.
+- Next: P1 is effectively at its floor unless Jared wants to accept the 20 as documented R quirks and close it; otherwise P2 (needs its own prereg) or P3 plans.
+
 ## 2026-11-14 — Parity rounds 3–4 (after M4)
 - Directed-segment distance now follows De Cáceres et al. 2019 eqs. 8–10 (open-access manuscript found in the University of Lleida repository; penalty uses the nearer endpoint, as ecotraj does) [Claude].
 - ecotraj's angle arithmetic reproduced from black-box probes (sum of base angles, upper-bound clamp, NaN for coincident states); numba kernels mirror it; collinear 1-D/2-D R fixtures added [Codex, interrupted by its usage limit; finished by the lab lead].
