@@ -15,6 +15,6 @@ Out of scope: promotion into analysis-skills (needs a separate dated approval), 
 | Item | Scope | Note |
 |---|---|---|
 | P1 | Remaining 20 parity deviations (non-metric 15, DS on one squared-Euclidean case 5); convergence row order and raw asymmetric SPD fixed | In progress (1,260/1,280 exact, 2026-11-15); all 20 are on exactly-degenerate corrected triplets and look like R floating-point noise (documented in docs/PARITY.md); none affects Euclidean/clr directionality, the sign-flip null or the split |
-| P2 | Extension 2 power curve for smaller swaps (a = 0.025–0.10) and fewer parts | Needs its own pre-registration before running |
+| P2 | Extension 2 power curve for smaller swaps (a = 0.025–0.10) and fewer parts | Pre-registered 2026-11-17 (`prereg/P2_PREREG.md`), requested on research-lab #50 |
 | P3 | Scout plan 3: rerun the increment split unchanged on activity-like count panels | Plans only; data must be public or local-only |
 | P4 | Package release (PyPI) | Only if the lab wants it |
