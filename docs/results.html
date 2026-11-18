@@ -44,6 +44,19 @@
 <li><b>Caveat.</b> Power is near 1 at T = 62, so the planted effect (taken from the scout panel) was easy; this run does not map power for smaller swaps. It does not show the scout panel's residual walk is real, and no forecasting metric was computed.</li>
 <li><b>Provenance.</b> The full run was repeated after a numba cache fix, with all caches cleared; every output file was byte-identical. Three replications were also recomputed independently with the slow reference code. See <a href="https://github.com/jgridifier/ecotraj-py/blob/main/results/PROVENANCE.md">PROVENANCE.md</a> and <a href="https://github.com/jgridifier/ecotraj-py/blob/main/results/EXT2_RESULTS.md">EXT2_RESULTS.md</a>.</li></ul>
 
+<h2>3b. P2: power curve for smaller swaps and fewer parts (pre-registered)</h2>
+<p>A follow-up run answering the caveat above, pre-registered in <a href="https://github.com/jgridifier/ecotraj-py/blob/main/prereg/P2_PREREG.md">P2_PREREG.md</a> (merged before the run). Swap size a = 0.025&ndash;0.10 clr per step, D = 14 and D = 6 parts, T = 40 / 62; master seed 2026111701, B = 199, R = 1,000 per cell. Only the size check was pass/fail; the power curve is descriptive.</p>
+<table><tr><th>Cell</th><th>P1 power, D = 14</th><th>P1 power, D = 6</th></tr>
+<tr><td>(i) null (size), T=40 / 62</td><td class="n">&mdash;</td><td class="n ok">0.051 / 0.042</td></tr>
+<tr><td>a = 0.025, T=40 / 62</td><td class="n">0.095 / 0.147</td><td class="n">0.085 / 0.088</td></tr>
+<tr><td>a = 0.05, T=40 / 62</td><td class="n">0.303 / 0.495</td><td class="n">0.187 / 0.281</td></tr>
+<tr><td>a = 0.075, T=40 / 62</td><td class="n">0.671 / 0.900</td><td class="n">0.423 / 0.614</td></tr>
+<tr><td>a = 0.10, T=40 / 62</td><td class="n">0.924 / 0.997</td><td class="n">0.619 / 0.879</td></tr></table>
+<ul>
+<li><b>Verdict.</b> Size check at D = 6 is inside [0.030, 0.070] at both T: <span class="ok">PASS</span>.</li>
+<li><b>Minimum detectable swap</b> (P1 power &ge; 0.80 at T = 62): 0.075 with 14 parts, 0.10 with 6 parts. Swaps of 0.05 or less are mostly missed at these sample lengths.</li>
+<li>The level procedure L stays near zero power in every cell (&le; 0.014). Full table with intervals and the P1-naive, W and Mk columns: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/results/P2_RESULTS.md">P2_RESULTS.md</a>.</li></ul>
+
 <h2>4. How this was built</h2>
 <p>Implementation by the Claude Code CLI (core port, parity fixes, Extension 2 code) and the Codex CLI (R-oracle fixtures, parity suite, numba kernels, audits), each reviewing the other's work; checked against the oracle by the lab lead. Clean-room: ecotraj (GPL) was used only as a black box. Status log: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/STATUS.md">STATUS.md</a>.</p>
 </body></html>
