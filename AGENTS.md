@@ -10,6 +10,10 @@ market/residual split plus sign-flip tests (Extension 2). The R package
 **ecotraj 1.2.2 is the oracle**. No ecotraj source code is in this tree, and
 none should be read, printed, or browsed (see the clean-room rule below).
 
+Provenance: written by AI coding agents from the published papers and public
+ecotraj docs; an independent implementation, with ecotraj (GPL) run only as a
+separate program to benchmark outputs. Keep that true. Wording: `NOTICE`.
+
 Live pages: https://jgridifier.github.io/ecotraj-py/
 Results: https://jgridifier.github.io/ecotraj-py/results.html
 Repo: https://github.com/jgridifier/ecotraj-py
@@ -24,7 +28,7 @@ src/ecotrajpy/     Installable package (core, metrics, comparison, compositional
                    nulls, split, fast, ext2)
 tests/             Pytest suite, including R-oracle fixtures and known deviations
 docs/              GitHub Pages site (served from main, /docs) plus API and parity docs
-docs/assets/       Logo (logo.svg, logo.png) and favicons
+docs/assets/       Logo (logo.png, logo-192.png) and favicons
 oracle/            R scripts that generate black-box fixtures (do not open ecotraj sources)
 scripts/           Local-only helpers (e.g. scout-panel parity; data is not in the repo)
 bench/             Speed comparison vs R (Extension 1)
@@ -145,7 +149,7 @@ step: edit the HTML/CSS in `docs/` and merge to `main`.
 | `docs/index.html` | Teaching page |
 | `docs/results.html` | Results (parity, speed, Extension 2, P2 power curve) |
 | `docs/style.css` | Site theme (keep the existing theme; logo lives in the header) |
-| `docs/assets/logo.svg` | Logo (PNG render: `docs/assets/logo.png`) |
+| `docs/assets/logo.png` | Logo (512 px, transparent; `logo-192.png`, `favicon-32.png`, `favicon.ico` are resized from it) |
 | `docs/PARITY.md` | Element-level parity notes |
 | `docs/api.md` | API reference |
 | `docs/API_SPEC.md` | Intended API and the clean-room rule |

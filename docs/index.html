@@ -1,8 +1,8 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ecotrajpy: trajectory analysis for compositions, explained</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon.ico" sizes="any"><link rel="apple-touch-icon" href="assets/logo-192.png"><link rel="stylesheet" href="style.css"></head><body>
+<title>ecotrajpy: trajectory analysis for compositions, explained</title><link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32"><link rel="icon" href="favicon.ico" sizes="any"><link rel="apple-touch-icon" href="assets/logo-192.png"><link rel="stylesheet" href="style.css"></head><body>
 <nav><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">API</a><a href="https://github.com/jgridifier/ecotraj-py">Repo</a></nav>
 <header class="brand">
-<img src="assets/logo.svg" width="52" height="52" alt="ecotrajpy logo: a directed trajectory through points in a 2-D ordination space, ending in a leaf">
+<img src="assets/logo.png" width="52" height="52" alt="ecotrajpy logo: a dotted trajectory across a grid, shading from teal to green and ending in a leaf">
 <div>
 <h1>ecotrajpy</h1>
 <p class="sub">A clean-room Python port of Ecological Trajectory Analysis (ETA), plus a tested market/residual split for share data.</p>
@@ -11,7 +11,9 @@
 
 <div class="box"><b>Credit.</b> The methods are by De Cáceres, Coll, Legendre, Allen, Wiser, Fortin, Condit &amp; Hubbell (2019, <i>Ecological Monographs</i> 89:e01350,
 <a href="https://doi.org/10.1002/ecm.1350">doi</a>), Sturbois et al. (2021, <i>Ecological Modelling</i> 440:109400) and Djeghri et al. (2026, <i>Ecological Monographs</i> 96:e70058), implemented in the R package
-<a href="https://cran.r-project.org/package=ecotraj">ecotraj</a>. ecotraj is GPL; this package is MIT and contains no ecotraj code. It was written from the papers and the published documentation, and ecotraj 1.2.2 was used only as a black-box test oracle.</div>
+<a href="https://cran.r-project.org/package=ecotraj">ecotraj</a>. </div>
+
+<div class="box" id="provenance"><b>Provenance and independence.</b> ecotrajpy was written by AI coding agents (OpenAI Codex and Anthropic Claude Code) working from the published papers and the public ecotraj documentation (help pages and vignettes). It is an independent implementation: no source code from the R package ecotraj was copied or translated, and the agents worked under a written rule not to read it. ecotraj (GPL ≥ 2) was used only as an external reference to benchmark numerical outputs, run as a separate program on synthetic inputs; no ecotraj datasets are included. ecotrajpy is MIT-licensed (<a href="https://github.com/jgridifier/ecotraj-py/blob/main/NOTICE">NOTICE</a>). ecotraj and the methods are © their authors; please cite the original papers above.</div>
 
 <h2>1. The idea: a time series of states is a path</h2>
 <p>Suppose you observe the same thing (a forest plot, a portfolio, a market split among a dozen players) at T dates, and each observation is a vector of many numbers. ETA treats the T states as points in a space where distances make sense, joins consecutive points with directed segments, and studies the <b>shape of the path</b>: how long it is, how sharply it turns, whether it keeps heading the same way, and how close it runs to other paths.</p>
