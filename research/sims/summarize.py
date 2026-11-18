@@ -3,6 +3,8 @@ import argparse
 import json
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 import numpy as np
 from scipy.stats import beta, binomtest
 
@@ -236,9 +238,9 @@ def summarize(results, summary, md):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--results", default="results/ext2")
-    ap.add_argument("--summary", default="results/ext2_summary.json")
-    ap.add_argument("--md", default="results/ext2_summary.md")
+    ap.add_argument("--results", default=str(REPO_ROOT / "research" / "results" / "ext2"))
+    ap.add_argument("--summary", default=str(REPO_ROOT / "research" / "results" / "ext2_summary.json"))
+    ap.add_argument("--md", default=str(REPO_ROOT / "research" / "results" / "ext2_summary.md"))
     a = ap.parse_args(argv)
     summarize(a.results, a.summary, a.md)
 

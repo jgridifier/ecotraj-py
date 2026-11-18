@@ -1,6 +1,6 @@
 """Extension 2: increment-level market/residual split with sign-flip tests.
 
-Implements the procedures of prereg/EXT2_PREREG.md (P1, P1-naive, L, W, Mk).
+Implements the procedures of research/prereg/EXT2_PREREG.md (P1, P1-naive, L, W, Mk).
 All statistics are functions of clr coordinates (Aitchison geometry), so they are
 invariant to part order and to an orthonormal ilr change of basis.
 """

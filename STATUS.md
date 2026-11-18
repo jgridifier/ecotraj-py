@@ -2,6 +2,12 @@
 
 Newest first. One entry per working session: date (ET), milestone, what passed, next step.
 
+## 2026-11-18 — Logo, docs, and research/ layout
+- Added a logo (`docs/assets/logo.svg`, PNG render, favicon) and used it on the README and the Pages site (existing theme kept).
+- Documentation pass for humans and coding agents: README (quickstart, R map, 1,260/1,280 parity, verified citations), `docs/api.md`, `AGENTS.md`, `llms.txt`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CITATION.cff`, and PyPI-ready `pyproject.toml` metadata (not published).
+- Moved pre-registrations, simulation runners, and published results into `research/` so the package tree stays lean. Scientific text of the pre-registrations is unchanged; runners and links now resolve under `research/`.
+- Next: P4 (PyPI release) still waits on an owner token and an explicit go. P1 floor / P3 unchanged.
+
 ## 2026-11-18 — Daily check (P2 logged)
 - P2 (Extension 2 power curve) was done on 2026-11-17 (prereg PR #11 merged before the run; results PR #12). Size check PASS (D = 6: 0.051 at T = 40, 0.042 at T = 62). Minimum detectable swap at T = 62: 0.075 (D = 14), 0.10 (D = 6). CI green on main.
 - Results page gained a P2 section; this entry adds the missing STATUS line. No code, tolerance or criterion changed.
@@ -28,7 +34,7 @@ Newest first. One entry per working session: date (ET), milestone, what passed, 
 - P1 (increment split, re-projected sign flip): size 0.052 (T=40) and 0.053 (T=62), inside [0.030, 0.070]; power 0.997 at T=62 (0.937 at T=40). **Extension 2 PASSES.**
 - L (old level procedure): size 0.001 / 0.001 and power 0.013 -> misses both criteria. McNemar (ii, T=62): 1,966 vs 0 discordant, so "P1 has more power than L" is permitted.
 - Secondary nulls (P1): heavy tails 0.046 / 0.047, heteroskedastic 0.040 / 0.038 (in band); stationary levels 0.000 (conservative, allowed). P1-naive (the scout's exact m1b procedure): 0.068 / 0.060 in scenario i, reported without a verdict.
-- Provenance: run 1 used a stale numba cache; fixed (53b8086) and re-ran the full pre-registered configuration with caches cleared: all CSVs byte-identical (results/PROVENANCE.md).
+- Provenance: run 1 used a stale numba cache; fixed (53b8086) and re-ran the full pre-registered configuration with caches cleared: all CSVs byte-identical (research/results/PROVENANCE.md).
 - Spot-check: three replications recomputed independently with the slow reference statistic; statistics and counts identical.
 - Next: parity round 3 PR (DS rule found), results page.
 

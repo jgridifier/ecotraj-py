@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ecotrajpy">
+  <title>ecotrajpy</title>
+  <desc>A directed trajectory through points in a 2D ordination space, ending in a leaf.</desc>
+  <!--
+    Badge mark for ecotrajpy. The polyline is a directional path in a simple
+    2-D ordination plane (axes at the origin). The leaf at the tip is a small
+    ecological hint and also reads as an arrowhead at favicon size.
+    The light field keeps contrast on both light and dark backgrounds.
+  -->
+  <rect x="1.5" y="1.5" width="61" height="61" rx="14" fill="#F7F4EC" stroke="#E4DFD2" stroke-width="1.25"/>
+  <!-- faint ordination axes -->
+  <path d="M13 51 H51 M13 51 V13" fill="none" stroke="#E4DFD2" stroke-width="0.9" stroke-linecap="round"/>
+  <!-- trajectory -->
+  <path d="M16 46 L24 34 L32 30 L42 22 L49 17" fill="none" stroke="#1B6B4A" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- surveyed states -->
+  <circle cx="16" cy="46" r="2.15" fill="#1B6B4A"/>
+  <circle cx="24" cy="34" r="2.15" fill="#1B6B4A"/>
+  <circle cx="32" cy="30" r="2.15" fill="#1B6B4A"/>
+  <circle cx="42" cy="22" r="2.15" fill="#1B6B4A"/>
+  <!-- leaf tip, oriented along the last segment (42,22)->(49,17) -->
+  <g transform="translate(49,17) rotate(-35.54)">
+    <path d="M0 0 C3.2 -2.6 7.8 -2.6 11.2 0 C7.8 2.6 3.2 2.6 0 0 Z" fill="#1B6B4A"/>
+    <path d="M1.2 0 H8.4" fill="none" stroke="#F7F4EC" stroke-width="0.7" stroke-linecap="round"/>
+  </g>
+</svg>

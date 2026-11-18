@@ -1,4 +1,4 @@
-# P2 results: Extension 2 power curve (pre-registered in prereg/P2_PREREG.md)
+# P2 results: Extension 2 power curve (pre-registered in research/prereg/P2_PREREG.md)
 
 Master seed 2026111701, B = 199, R = 1,000 per cell, 6733 s on 6 workers.
 

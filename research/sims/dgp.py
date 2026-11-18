@@ -1,4 +1,4 @@
-"""Data-generating process of prereg/EXT2_PREREG.md section 4."""
+"""Data-generating process of research/prereg/EXT2_PREREG.md section 4."""
 from __future__ import annotations
 
 import numpy as np

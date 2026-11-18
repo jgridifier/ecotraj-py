@@ -20,3 +20,24 @@ from .comparison import segment_distances, trajectory_convergence, trajectory_di
 from .compositional import clr
 from .nulls import directionality_coords, signflip_path, signflip_test
 from .split import increment_split
+
+__all__ = [
+    "Trajectories",
+    "define_trajectories",
+    "is_metric",
+    "trajectory_angles",
+    "trajectory_directionality",
+    "trajectory_internal_variation",
+    "trajectory_lengths",
+    "trajectory_metrics",
+    "trajectory_speeds",
+    "segment_distances",
+    "trajectory_convergence",
+    "trajectory_distances",
+    "clr",
+    "directionality_coords",
+    "signflip_path",
+    "signflip_test",
+    "increment_split",
+    "__version__",
+]
