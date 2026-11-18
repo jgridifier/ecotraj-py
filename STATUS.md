@@ -2,6 +2,11 @@
 
 Newest first. One entry per working session: date (ET), milestone, what passed, next step.
 
+## 2026-11-18 — Daily check (P2 logged)
+- P2 (Extension 2 power curve) was done on 2026-11-17 (prereg PR #11 merged before the run; results PR #12). Size check PASS (D = 6: 0.051 at T = 40, 0.042 at T = 62). Minimum detectable swap at T = 62: 0.075 (D = 14), 0.10 (D = 6). CI green on main.
+- Results page gained a P2 section; this entry adds the missing STATUS line. No code, tolerance or criterion changed.
+- Next: nothing can be advanced without Jared. P1 is at its floor (accept the 20 as documented R floating-point quirks?); P3 (activity-like count panels) and P4 (PyPI release) await his go-ahead.
+
 ## 2026-11-15 — Parity round 6 (P1)
 - Convergence row order fixed: `trajectoryConvergence(type="multiple")` takes its Mann-Kendall axis from the first row's site's times in input-row order and groups rows by exact time value (found by Claude from black-box probes; Codex corrected it to times-based grouping, exact synchrony on sets of times and per-group scaling, and added an integer-surveys check like R's constructor). Checked against R: 240/240 + 240/240 independent shuffled probes (Codex), 40/40 more (Claude cross-review); new permanent R-oracle fixture `tests/test_convergence_roworder.py` (58 cases).
 - Randomized oracle: **1,260 / 1,280 exact** (was 1,254). All 6 CONV_ROWORDER cleared. Suite: 1,488 passed, 20 xfailed. No tolerance or comparator changed.
