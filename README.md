@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo.svg" width="128" height="128" alt="ecotrajpy logo: a directed trajectory through points in a 2-D ordination space, ending in a leaf">
+  <img src="docs/assets/logo.png" width="128" height="128" alt="ecotrajpy logo: a dotted trajectory across a grid, shading from teal to green and ending in a leaf">
 </p>
 
 # ecotrajpy
@@ -31,14 +31,20 @@ see [CITATION.cff](CITATION.cff)):
   [doi:10.1002/ecm.70058](https://doi.org/10.1002/ecm.70058)
 - De Cáceres M, Djeghri N, Sturbois A. ecotraj: Ecological Trajectory Analysis. R package 1.2.2 (CRAN).
 
-## Clean-room note
+## Provenance and independence
 
-ecotraj is licensed **GPL (≥ 2)**. This package is **MIT** and contains **no
-ecotraj source code**. It was written from the papers and the package's
-published documentation (help pages, vignettes), and checked against ecotraj
-1.2.2 run as a black box: R produces JSON fixtures on synthetic trajectories
-(`oracle/`), and `tests/` compares against them. See [LICENSE](LICENSE) and
-[CONTRIBUTING.md](CONTRIBUTING.md).
+ecotrajpy was written by AI coding agents (OpenAI Codex and Anthropic Claude
+Code) working from the published papers and the public ecotraj documentation
+(help pages and vignettes). It is an **independent implementation**: no source
+code from the R package ecotraj was copied or translated, and the agents
+worked under a written rule not to read it ([docs/API_SPEC.md](docs/API_SPEC.md)).
+The R package [ecotraj](https://cran.r-project.org/package=ecotraj) (GPL ≥ 2)
+was used only as an external reference to benchmark numerical outputs, run as
+a separate program: R scripts in `oracle/` produce JSON fixtures on synthetic
+trajectories, and `tests/` compares against them. No ecotraj datasets are
+included. This package is MIT ([LICENSE](LICENSE)); see [NOTICE](NOTICE).
+ecotraj and the methods are © their authors; please cite the original papers
+above.
 
 ## Install (from source)
 

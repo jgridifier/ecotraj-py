@@ -8,7 +8,8 @@ and the project version is the `version` field in `pyproject.toml`.
 
 ### Added
 
-- Logo (`docs/assets/logo.svg`, PNG render, favicon) on the README and the Pages site.
+- Logo (`docs/assets/logo.png`, made with Grok Imagine; favicons resized from it) on the README and the Pages site.
+- `NOTICE` and a "Provenance and independence" section (README, Pages): built by AI agents from the papers, benchmarked against ecotraj run as a separate program, independent implementation.
 - Agent-oriented docs: `AGENTS.md`, `llms.txt`, `docs/api.md`, `CONTRIBUTING.md`, `CITATION.cff`.
 - `research/` folder for pre-registrations, simulation runners, and published results, so the installable package stays lean.
 

@@ -3,7 +3,7 @@
 Newest first. One entry per working session: date (ET), milestone, what passed, next step.
 
 ## 2026-11-18 — Logo, docs, and research/ layout
-- Added a logo (`docs/assets/logo.svg`, PNG render, favicon) and used it on the README and the Pages site (existing theme kept).
+- Added a logo (`docs/assets/logo.png`, Grok Imagine; favicons resized from it) and used it on the README and the Pages site (existing theme kept).
 - Documentation pass for humans and coding agents: README (quickstart, R map, 1,260/1,280 parity, verified citations), `docs/api.md`, `AGENTS.md`, `llms.txt`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CITATION.cff`, and PyPI-ready `pyproject.toml` metadata (not published).
 - Moved pre-registrations, simulation runners, and published results into `research/` so the package tree stays lean. Scientific text of the pre-registrations is unchanged; runners and links now resolve under `research/`.
 - Next: P4 (PyPI release) still waits on an owner token and an explicit go. P1 floor / P3 unchanged.

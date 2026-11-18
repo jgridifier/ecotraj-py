@@ -2,6 +2,8 @@
 
 > Clean-room Python port of Ecological Trajectory Analysis (ETA). ecotraj 1.2.2 is the test oracle.
 
+Provenance: written by AI coding agents from the published papers; an independent implementation (no ecotraj source copied or translated), benchmarked against the R package ecotraj run as a separate program. See NOTICE.
+
 This file points coding agents at the canonical docs. Start with AGENTS.md.
 
 ## Start here
@@ -24,6 +26,7 @@ This file points coding agents at the canonical docs. Start with AGENTS.md.
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [CITATION.cff](CITATION.cff)
 - [LICENSE](LICENSE)
+- [NOTICE](NOTICE): provenance, independence, and credit
 
 ## Research (frozen)
 
