@@ -1,11 +1,13 @@
-"""Summarize the P2 run (prereg/P2_PREREG.md) into results/P2_RESULTS.md and results/p2_summary.json."""
+"""Summarize the P2 run (research/prereg/P2_PREREG.md) into research/results/P2_RESULTS.md and research/results/p2_summary.json."""
 import json
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 import numpy as np
 import pandas as pd
 from scipy.stats import beta
 
-OUT = Path("results/p2")
+OUT = REPO_ROOT / "research" / "results" / "p2"
 meta = json.loads((OUT / "run_meta.json").read_text())
 PROCS = ["P1", "P1n", "L", "W", "Mk"]
 
@@ -37,8 +39,8 @@ for D in (14, 6):
     mdd[D] = min(ok) if ok else None
 res = dict(cells=summ, size_check_D6=size, size_check_passes=size_ok, min_detectable_a_T62=mdd,
            master_seed=meta["master_seed"], B=meta["B"], total_seconds=meta["total_seconds"])
-Path("results/p2_summary.json").write_text(json.dumps(res, indent=1))
-L = ["# P2 results: Extension 2 power curve (pre-registered in prereg/P2_PREREG.md)", "",
+REPO_ROOT / "research" / "results" / "p2_summary.json".write_text(json.dumps(res, indent=1))
+L = ["# P2 results: Extension 2 power curve (pre-registered in research/prereg/P2_PREREG.md)", "",
      f"Master seed {meta['master_seed']}, B = {meta['B']}, R = 1,000 per cell, {meta['total_seconds']:.0f} s on 6 workers.", "",
      "| cell | P1 | P1n | L | W | Mk | retained | net disp u |", "|---|---|---|---|---|---|---|---|"]
 for name, c in summ.items():
@@ -49,5 +51,5 @@ L += ["", "## Verdict (pre-registered)", "",
       f"- Minimum detectable swap at T = 62 (smallest a with P1 power >= 0.80): D = 14: {mdd[14] if mdd[14] is not None else 'none in grid'}; D = 6: {mdd[6] if mdd[6] is not None else 'none in grid'}.",
       "- Invalid replications are excluded from rates and never counted as rejections (counts in p2_summary.json).",
       "- No forecast metric."]
-Path("results/P2_RESULTS.md").write_text("\n".join(L) + "\n")
+REPO_ROOT / "research" / "results" / "P2_RESULTS.md".write_text("\n".join(L) + "\n")
 print("\n".join(L))

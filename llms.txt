@@ -1,0 +1,43 @@
+# ecotrajpy
+
+> Clean-room Python port of Ecological Trajectory Analysis (ETA). ecotraj 1.2.2 is the test oracle.
+
+This file points coding agents at the canonical docs. Start with AGENTS.md.
+
+## Start here
+
+- [AGENTS.md](AGENTS.md): purpose, repo map, setup, invariants, commands
+- [README.md](README.md): what it is, install from source, quickstart, R mapping, parity, citations
+
+## Package
+
+- [docs/api.md](docs/api.md): API reference
+- [docs/API_SPEC.md](docs/API_SPEC.md): intended API and the clean-room rule
+- [docs/PARITY.md](docs/PARITY.md): 1,260/1,280 parity and the 20 R floating-point quirks
+- [src/ecotrajpy/](src/ecotrajpy/): package source
+
+## Project status
+
+- [ROADMAP.md](ROADMAP.md)
+- [STATUS.md](STATUS.md)
+- [CHANGELOG.md](CHANGELOG.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [CITATION.cff](CITATION.cff)
+- [LICENSE](LICENSE)
+
+## Research (frozen)
+
+- [research/README.md](research/README.md): layout and how paths moved
+- [research/prereg/EXT2_PREREG.md](research/prereg/EXT2_PREREG.md)
+- [research/prereg/P2_PREREG.md](research/prereg/P2_PREREG.md)
+- [research/results/EXT2_RESULTS.md](research/results/EXT2_RESULTS.md)
+- [research/results/P2_RESULTS.md](research/results/P2_RESULTS.md)
+- [research/results/PROVENANCE.md](research/results/PROVENANCE.md)
+
+## Site
+
+- [docs/index.html](docs/index.html): teaching page
+- [docs/results.html](docs/results.html): results page
+- [docs/style.css](docs/style.css)
+- Live: https://jgridifier.github.io/ecotraj-py/
+- Results: https://jgridifier.github.io/ecotraj-py/results.html

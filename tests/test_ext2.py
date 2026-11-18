@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "sims"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "research" / "sims"))
 import dgp  # noqa: E402
 from ecotrajpy import ext2  # noqa: E402
 from ecotrajpy.nulls import signflip_test  # noqa: E402

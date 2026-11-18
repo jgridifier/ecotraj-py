@@ -27,13 +27,13 @@
    flagged invalid for that procedure (`<proc>_valid = 0`, count and p-value NaN). It is never counted as a
    rejection or a non-rejection; the summary reports the number of invalid replications per cell and procedure
    and computes rates over valid replications only, showing the count.
-16. **Summary validation.** `sims/summarize.py` checks `run_meta.json` (preregistered_configuration true,
+16. **Summary validation.** `research/sims/summarize.py` checks `run_meta.json` (preregistered_configuration true,
    seed 2026111401, B = 199, R per cell) and CSV completeness/integrity before issuing a verdict. Anything else
    is labelled `DEVELOPMENT RUN - NOT A PREREGISTERED RESULT` and gets no binding verdict.
 17. **Scenario-ii-only outputs.** Retained-drift fraction and net displacement along u are saved only for
    scenario ii (NaN elsewhere).
 
-## (b) Items covered by Addendum 1 (prereg/, written by the lab lead)
+## (b) Items covered by Addendum 1 (research/prereg/, written by the lab lead)
 
 These are fixed or touched by the prereg text and are covered by Addendum 1, not decided here:
 

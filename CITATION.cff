@@ -1,0 +1,98 @@
+cff-version: 1.2.0
+title: ecotrajpy
+message: >-
+  If you use this software, please cite the original
+  Ecological Trajectory Analysis papers and this software.
+type: software
+authors:
+  - name: jgridifier
+repository-code: "https://github.com/jgridifier/ecotraj-py"
+url: "https://jgridifier.github.io/ecotraj-py/"
+license: MIT
+version: 0.1.0
+date-released: "2026-11-14"
+abstract: >-
+  Clean-room Python port of Ecological Trajectory Analysis
+  (ETA) metrics, validated against the R package ecotraj 1.2.2.
+keywords:
+  - ecological trajectory analysis
+  - directionality
+  - compositional data
+  - ecotraj
+references:
+  - type: article
+    title: Trajectory analysis in community ecology
+    authors:
+      - family-names: De Cáceres
+        given-names: Miquel
+      - family-names: Coll
+        given-names: Lluís
+      - family-names: Legendre
+        given-names: Pierre
+      - family-names: Allen
+        given-names: Robert B.
+      - family-names: Wiser
+        given-names: Susan K.
+      - family-names: Fortin
+        given-names: Marie-Josée
+      - family-names: Condit
+        given-names: Richard
+      - family-names: Hubbell
+        given-names: Stephen
+    year: 2019
+    journal: Ecological Monographs
+    volume: "89"
+    issue: "2"
+    doi: 10.1002/ecm.1350
+    identifiers:
+      - type: doi
+        value: 10.1002/ecm.1350
+  - type: article
+    title: "Extending community trajectory analysis: New metrics and representation"
+    authors:
+      - family-names: Sturbois
+        given-names: Anthony
+      - family-names: De Cáceres
+        given-names: Miquel
+      - family-names: Sánchez-Pinillos
+        given-names: M.
+      - family-names: Schaal
+        given-names: G.
+      - family-names: Gauthier
+        given-names: Olivier
+      - family-names: Le Mao
+        given-names: P.
+      - family-names: Ponsero
+        given-names: A.
+      - family-names: Desroy
+        given-names: N.
+    year: 2021
+    journal: Ecological Modelling
+    volume: "440"
+    doi: 10.1016/j.ecolmodel.2020.109400
+  - type: article
+    title: >-
+      Going round in cycles but going somewhere: Deciphering
+      cyclical dynamics using Ecological Trajectory Analysis
+    authors:
+      - family-names: Djeghri
+        given-names: Nicolas
+      - family-names: Sturbois
+        given-names: Anthony
+      - family-names: Hélaouët
+        given-names: Pierre
+      - family-names: Geissmann
+        given-names: Quentin
+      - family-names: Rimmelin-Maury
+        given-names: Peggy
+      - family-names: Boyé
+        given-names: Aurélien
+      - family-names: Gauthier
+        given-names: Olivier
+      - family-names: De Cáceres
+        given-names: Miquel
+    year: 2026
+    journal: Ecological Monographs
+    volume: "96"
+    issue: "2"
+    doi: 10.1002/ecm.70058

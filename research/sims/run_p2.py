@@ -1,4 +1,4 @@
-"""Run the P2 power curve (prereg/P2_PREREG.md). Same DGP and procedures as Extension 2; only a and D vary.
+"""Run the P2 power curve (research/prereg/P2_PREREG.md). Same DGP and procedures as Extension 2; only a and D vary.
 
 Default = the pre-registered run (master seed 2026111701, R = 1000, B = 199, 18 cells in the stated order).
 """
@@ -12,6 +12,8 @@ import sys
 import time
 from multiprocessing import Pool
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 import numpy as np
 
@@ -59,7 +61,7 @@ def one_rep(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reps", type=int, default=None, help="DEV ONLY")
-    ap.add_argument("--out", default="results/p2")
+    ap.add_argument("--out", default=str(REPO_ROOT / "research" / "results" / "p2"))
     ap.add_argument("--workers", type=int, default=6)
     a = ap.parse_args()
     R = a.reps or 1000

@@ -1,4 +1,4 @@
-"""Run the Extension 2 simulation (prereg/EXT2_PREREG.md).
+"""Run the Extension 2 simulation (research/prereg/EXT2_PREREG.md).
 
 Default = the pre-registered run (master seed 2026111401, R = 2000 / 1000, B = 199).
 --reps / --seed override are for development only.
@@ -13,6 +13,8 @@ import sys
 import time
 from multiprocessing import Pool
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 import numpy as np
 
@@ -60,7 +62,7 @@ def main():
     ap.add_argument("--cells", default="all", help="comma list like i/40,ii/62 (default all)")
     ap.add_argument("--reps", type=int, default=None, help="DEV ONLY: override R")
     ap.add_argument("--seed", type=int, default=None, help="DEV ONLY: override master seed")
-    ap.add_argument("--out", default="results/ext2")
+    ap.add_argument("--out", default=str(REPO_ROOT / "research" / "results" / "ext2"))
     ap.add_argument("--workers", type=int, default=8)
     a = ap.parse_args()
 

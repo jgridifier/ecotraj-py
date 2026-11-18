@@ -5,3 +5,9 @@ table{border-collapse:collapse;margin:1rem 0;font-size:.93rem}th,td{border:1px s
 td.n{text-align:right}.ok{color:#137333;font-weight:600}.bad{color:#b3261e;font-weight:600}.warn{color:#8a5a00;font-weight:600}
 .box{background:#f7f9fc;border-left:4px solid #4a6fa5;padding:.6rem 1rem;margin:1rem 0}nav a{margin-right:1rem}
 .formula{font-family:Georgia,serif;font-size:1.05rem;text-align:center;margin:1rem 0}
+
+header.brand{display:flex;align-items:center;gap:.85rem;margin:0 0 1.2rem}
+header.brand img{width:52px;height:52px;display:block;flex:none;border-radius:12px}
+header.brand h1{margin:0;font-size:1.9rem;line-height:1.15}
+header.brand .sub{margin:.15rem 0 0}
+nav{display:flex;flex-wrap:wrap;gap:.25rem 0;margin-bottom:1.4rem}
