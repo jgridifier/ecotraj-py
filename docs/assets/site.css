@@ -69,7 +69,7 @@ figcaption b{color:var(--ink-2)}
 .card{border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px 20px;background:#fff;display:block;color:inherit;transition:box-shadow .15s,border-color .15s}
 a.card:hover{text-decoration:none;border-color:#c6d5f7;box-shadow:0 1px 3px rgba(60,64,67,.12),0 4px 12px rgba(60,64,67,.08)}
 .card .k{color:var(--muted);font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
-.card .v{font-size:30px;line-height:1.2;color:var(--ink);margin:6px 0 4px;font-weight:400}
+.card .v{font-size:30px;line-height:1.2;color:var(--ink);margin:6px 0 4px;font-weight:400;overflow-wrap:anywhere}
 .card h3{margin:0 0 6px;font-size:19px;font-weight:500;color:var(--ink)}
 .card p{margin:0;font-size:15.5px;line-height:1.55;color:var(--muted)}
 .callout{background:var(--wash);border-radius:var(--radius);padding:20px 24px;font-size:16.5px}
