@@ -148,7 +148,8 @@ step: edit the HTML/CSS in `docs/` and merge to `main`.
 |---|---|
 | `docs/index.html` | Teaching page |
 | `docs/results.html` | Results (parity, speed, Extension 2, P2 power curve) |
-| `docs/style.css` | Site theme (keep the existing theme; logo lives in the header) |
+| `docs/assets/site.css`, `docs/assets/site.js` | Site theme (Google Research blog style, from research-lab's `docs/methods-scout/library-site-template/`) and helpers (nav, copy buttons, KaTeX, data-driven charts) |
+| `docs/assets/hero.jpg` | Overview hero illustration (Grok Imagine) |
 | `docs/assets/logo.png` | Logo (512 px, transparent; `logo-192.png`, `favicon-32.png`, `favicon.ico` are resized from it) |
 | `docs/PARITY.md` | Element-level parity notes |
 | `docs/api.md` | API reference |
@@ -158,9 +159,11 @@ The numbers on `docs/results.html` come from `research/results/` (and
 `docs/PARITY.md` / `bench/`). Update the page when a new pre-registered
 result is merged; do not invent numbers.
 
-If a new page has no theme of its own, use a Google Research blog-like
-look (clean, white, sans-serif). This site already has a theme in
-`docs/style.css` — keep it, and keep the logo in the header.
+The site uses the shared library-site theme (Google Research blog style;
+style only, no Google branding). New pages copy the head, top bar and footer
+of an existing page and use `assets/site.css`. Keep the logo in the header.
+Illustrations come from Grok Imagine only; charts use the real numbers
+(`.chart.bars` / `.chart.lines` in `assets/site.js`). Never hand-draw SVG logos.
 
 ## Pull requests
 

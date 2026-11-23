@@ -41,6 +41,6 @@ This file points coding agents at the canonical docs. Start with AGENTS.md.
 
 - [docs/index.html](docs/index.html): teaching page
 - [docs/results.html](docs/results.html): results page
-- [docs/style.css](docs/style.css)
+- [docs/assets/site.css](docs/assets/site.css): site theme
 - Live: https://jgridifier.github.io/ecotraj-py/
 - Results: https://jgridifier.github.io/ecotraj-py/results.html
