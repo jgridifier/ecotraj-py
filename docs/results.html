@@ -1,45 +1,79 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ecotrajpy: results</title><link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32"><link rel="icon" href="favicon.ico" sizes="any"><link rel="apple-touch-icon" href="assets/logo-192.png"><link rel="stylesheet" href="style.css"></head><body>
-<nav><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">API</a><a href="https://github.com/jgridifier/ecotraj-py">Repo</a></nav>
-<header class="brand">
-<img src="assets/logo.png" width="52" height="52" alt="ecotrajpy logo: a dotted trajectory across a grid, shading from teal to green and ending in a leaf">
-<div>
-<h1>Results</h1>
-<p class="sub">Updated 2026-11-18 (ET). Milestones M0–M4 done; P2 power curve logged. Synthetic data only; scout-panel checks were run locally on data that is not in the repo.</p>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ecotrajpy: results</title>
+<meta name="description" content="ecotrajpy results: parity with ecotraj, speed, and the pre-registered Extension 2 and P2 simulations.">
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/logo-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="alternate" type="text/plain" href="https://github.com/jgridifier/ecotraj-py/blob/main/llms.txt" title="llms.txt">
+</head>
+<body>
+<header class="topbar"><div class="in">
+<a class="wordmark" href="index.html"><img src="assets/logo.png" alt="ecotrajpy logo: a dotted trajectory across a grid, shading from teal to green and ending in a leaf" width="32" height="32"><span>ecotrajpy</span></a>
+<nav class="nav" aria-label="Site">
+<a href="index.html">Teaching page</a>
+<a href="results.html">Results</a>
+<a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">API</a>
+<a href="https://github.com/jgridifier/ecotraj-py/blob/main/AGENTS.md">AGENTS.md</a>
+<a href="https://github.com/jgridifier/ecotraj-py/blob/main/llms.txt">llms.txt</a>
+<a href="https://github.com/jgridifier/ecotraj-py">GitHub</a>
+</nav>
+</div></header>
+<section class="hero">
+<p class="eyebrow">Results</p>
+<h1>Parity, speed and pre-registered tests</h1>
+<p class="lede">Updated 2026-11-18 (ET). Milestones M0–M4 done; P2 power curve logged. Synthetic data only; scout-panel checks were run locally on data that is not in the repo.</p>
+</section>
+<main>
+<article class="prose">
+<div class="cards">
+<a class="card" href="#parity"><div class="k">Parity</div><div class="v">1,260 / 1,280</div><p>exact matches with ecotraj 1.2.2</p></a>
+<a class="card" href="#speed"><div class="k">Speed, 62 × 14</div><div class="v">167×</div><p>numba (1 thread) vs the R loop: 0.593 s vs 98.8 s</p></a>
+<a class="card" href="#ext2"><div class="k">Size, T = 40 / 62</div><div class="v">0.052 / 0.053</div><p>inside the pre-set band [0.030, 0.070]</p></a>
+<a class="card" href="#ext2"><div class="k">Power, T = 62</div><div class="v">99.7%</div><p>on a planted swap the size of the scout panel's</p></a>
 </div>
-</header>
+<h2 id="headline">Headline</h2>
+<div class="callout blue"><p><b>Extension 2 passes its pre-registered test.</b> The increment-level market/residual split with a re-projected sign-flip test held its false-positive rate at <b>0.052</b> (T = 40) and <b>0.053</b> (T = 62), inside the pre-set band [0.030, 0.070], and detected a planted orthogonal swap the size of the scout panel's <b>99.7%</b> of the time at T = 62 (93.7% at T = 40). The old level-residualization procedure missed both criteria (false-positive rate 0.001, power 0.013).</p></div>
 
-<h2>Headline</h2>
-<div class="box"><b>Extension 2 passes its pre-registered test.</b> The increment-level market/residual split with a re-projected sign-flip test held its false-positive rate at <b>0.052</b> (T = 40) and <b>0.053</b> (T = 62), inside the pre-set band [0.030, 0.070], and detected a planted orthogonal swap the size of the scout panel's <b>99.7%</b> of the time at T = 62 (93.7% at T = 40). The old level-residualization procedure missed both criteria (false-positive rate 0.001, power 0.013).</div>
-
-<h2>1. Replication: parity with ecotraj 1.2.2 (M1)</h2>
+<h2 id="parity">1. Replication: parity with ecotraj 1.2.2 (M1)</h2>
 <p>All the numbers the 2026-11-12 scout run reported are reproduced:</p>
-<table><tr><th>Quantity</th><th>ecotraj</th><th>ecotrajpy</th></tr>
+<div class="table-wrap"><table><tr><th>Quantity</th><th>ecotraj</th><th>ecotrajpy</th></tr>
 <tr><td>Panel A directionality (T=40, 14 parts)</td><td class="n">0.577301</td><td class="n ok">0.577301</td></tr>
 <tr><td>Panel E4 directionality (T=62, 4 parts)</td><td class="n">0.431413</td><td class="n ok">0.431413</td></tr>
 <tr><td>A residual-increment directionality</td><td class="n">0.595092</td><td class="n ok">0.595092</td></tr>
 <tr><td>A residual sign-flip p (seed 20261112, 999 draws, R's draws replayed)</td><td class="n">0.008</td><td class="n ok">0.008 (null diff ≤ 8e-15)</td></tr>
-<tr><td>A market / E4 residual / E4 market sign-flip p</td><td class="n">0.918 / 0.365 / 0.928</td><td class="n ok">0.918 / 0.365 / 0.928</td></tr></table>
+<tr><td>A market / E4 residual / E4 market sign-flip p</td><td class="n">0.918 / 0.365 / 0.928</td><td class="n ok">0.918 / 0.365 / 0.928</td></tr></table></div>
 <p>A randomized oracle suite (40 synthetic cases: Euclidean, squared-Euclidean and Bray-Curtis inputs; 1–5 trajectories; unequal lengths; shuffled rows; 1,280 checks at rtol 1e-8) is in CI. Full table and the list of remaining deviations: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/PARITY.md">PARITY.md</a>.</p>
 <p id="parity-count"><b>Exact matches: 1,260 of 1,280</b> (updated 2026-11-15). 20 documented deviations remain, all on squared-Euclidean / Bray-Curtis inputs where the triangle correction makes triplets exactly collinear and ecotraj's output follows the sign of floating-point rounding noise: 15 non-metric checks (segment PPA, angles, pairwise convergence, SPD) and 5 directed-segment values on one squared-Euclidean case. The row-order dependence of the multi-trajectory convergence test is now reproduced (ecotraj uses the first site's times in input-row order). Directionality, lengths, speeds, internal variation, metrics and multi-trajectory convergence match on every case; angles on all but 3 non-metric checks.</p>
 
-<h2>2. Speed (Extension 1, M2)</h2>
+<h2 id="speed">2. Speed (Extension 1, M2)</h2>
 <p>Complete sign-flip test, 999 draws, five-run medians, synthetic clr random-walk panels.</p>
-<table><tr><th>Panel (T × parts)</th><th>R ecotraj loop*</th><th>Python reference</th><th>numba, 1 thread</th><th>numba, 8 threads</th></tr>
+<figure>
+<div class="chart bars" data-unit="s" data-scale="log" data-title="Complete sign-flip test, 999 draws (five-run medians)" data-groups='[{"label":"62 × 14 (scout scale)","bars":[["R ecotraj loop*",98.8,1],["Python reference",8.89,2],["numba, 1 thread",0.593,3],["numba, 8 threads",0.106,4]]},{"label":"120 × 50 (larger panel)","bars":[["R ecotraj loop*",614,1],["Python reference",74.1,2],["numba, 1 thread",3.21,3],["numba, 8 threads",0.424,4]]}]'></div>
+<figcaption><b>Figure 1.</b> The same numbers as the table below, on a log scale. *R times are a naive user loop, extrapolated from warm batches.</figcaption>
+</figure>
+
+<div class="table-wrap"><table><tr><th>Panel (T × parts)</th><th>R ecotraj loop*</th><th>Python reference</th><th>numba, 1 thread</th><th>numba, 8 threads</th></tr>
 <tr><td>62 × 14 (scout scale)</td><td class="n">98.8 s*</td><td class="n">8.89 s</td><td class="n">0.593 s</td><td class="n">0.106 s</td></tr>
-<tr><td>120 × 50 (larger panel)</td><td class="n">614 s*</td><td class="n">74.1 s</td><td class="n">3.21 s</td><td class="n">0.424 s</td></tr></table>
+<tr><td>120 × 50 (larger panel)</td><td class="n">614 s*</td><td class="n">74.1 s</td><td class="n">3.21 s</td><td class="n">0.424 s</td></tr></table></div>
 <p>*R times are a naive user loop (<code>dist</code> → <code>defineTrajectories</code> → <code>trajectoryDirectionality</code> per draw), extrapolated linearly from warm batches. numba results equal the reference to ≤ 1e-12; first-call JIT compile ≈ 1.2 s. Details: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/bench/README.md">bench/README.md</a>.</p>
 
-<h2>3. Extension 2: pre-registered simulations (M3, M4)</h2>
+<h2 id="ext2">3. Extension 2: pre-registered simulations (M3, M4)</h2>
 <p>The <a href="https://github.com/jgridifier/ecotraj-py/blob/main/research/prereg/EXT2_PREREG.md">pre-registration</a> was merged before any simulation (reviewed by a second agent; one dated addendum, also before the run). Design: 14-part compositions, 4 market covariates (one trending), market ≈ 35% of step energy; scenario (i) all directed motion is market-driven; scenario (ii) adds a part-1-vs-part-2 swap of 0.10 clr per step, orthogonal to every market loading. B = 199 sign flips, α = 0.05, R = 2000 (primary) / 1000 (secondary) replications, seed 2026111401.</p>
-<table><tr><th>Cell</th><th>P1 (increment split, re-projected)</th><th>P1-naive (scout m1b)</th><th>L (level procedure)</th><th>W (whole path)</th></tr>
+<div class="table-wrap"><table><tr><th>Cell</th><th>P1 (increment split, re-projected)</th><th>P1-naive (scout m1b)</th><th>L (level procedure)</th><th>W (whole path)</th></tr>
 <tr><td>(i) null, T=40</td><td class="n ok">0.052 [0.043, 0.063]</td><td class="n">0.068</td><td class="n bad">0.001</td><td class="n">0.011</td></tr>
 <tr><td>(i) null, T=62</td><td class="n ok">0.053 [0.044, 0.064]</td><td class="n">0.060</td><td class="n bad">0.001</td><td class="n">0.013</td></tr>
 <tr><td>(ii) swap, T=40</td><td class="n">0.937 [0.925, 0.947]</td><td class="n">0.948</td><td class="n">0.007</td><td class="n">0.765</td></tr>
 <tr><td>(ii) swap, T=62</td><td class="n ok">0.997 [0.993, 0.999]</td><td class="n">0.997</td><td class="n bad">0.013</td><td class="n">0.969</td></tr>
 <tr><td>(i-b) stationary levels, T=40 / 62</td><td class="n">0.000 / 0.000</td><td class="n">0.000 / 0.000</td><td class="n">0.000 / 0.000</td><td class="n">0.004 / 0.002</td></tr>
 <tr><td>(i-c) heavy tails, T=40 / 62</td><td class="n ok">0.046 / 0.047</td><td class="n">0.059 / 0.060</td><td class="n">0.001 / 0.000</td><td class="n">0.007 / 0.013</td></tr>
-<tr><td>(i-d) heteroskedastic, T=40 / 62</td><td class="n ok">0.040 / 0.038</td><td class="n">0.057 / 0.046</td><td class="n">0.000 / 0.000</td><td class="n">0.007 / 0.006</td></tr></table>
+<tr><td>(i-d) heteroskedastic, T=40 / 62</td><td class="n ok">0.040 / 0.038</td><td class="n">0.057 / 0.046</td><td class="n">0.000 / 0.000</td><td class="n">0.007 / 0.006</td></tr></table></div>
 <p>Rejection rates at α = 0.05 with Clopper-Pearson 95% intervals; green = meets its pre-registered criterion, red = misses.</p>
 <ul>
 <li><b>Verdict.</b> P1 meets criterion 1 (size band at both T) and criterion 2 (power ≥ 0.80 at T = 62): <span class="ok">Extension 2 passes</span>. L misses both. Paired McNemar on (ii, T = 62): P1 rejected where L did not in 1,966 replications, the reverse in 0, so the pre-registered statement "P1 has more power than L" is allowed.</li>
@@ -49,19 +83,34 @@
 <li><b>Caveat.</b> Power is near 1 at T = 62, so the planted effect (taken from the scout panel) was easy; this run does not map power for smaller swaps. It does not show the scout panel's residual walk is real, and no forecasting metric was computed.</li>
 <li><b>Provenance.</b> The full run was repeated after a numba cache fix, with all caches cleared; every output file was byte-identical. Three replications were also recomputed independently with the slow reference code. See <a href="https://github.com/jgridifier/ecotraj-py/blob/main/research/results/PROVENANCE.md">PROVENANCE.md</a> and <a href="https://github.com/jgridifier/ecotraj-py/blob/main/research/results/EXT2_RESULTS.md">EXT2_RESULTS.md</a>.</li></ul>
 
-<h2>3b. P2: power curve for smaller swaps and fewer parts (pre-registered)</h2>
+<h2 id="p2">3b. P2: power curve for smaller swaps and fewer parts (pre-registered)</h2>
 <p>A follow-up run answering the caveat above, pre-registered in <a href="https://github.com/jgridifier/ecotraj-py/blob/main/research/prereg/P2_PREREG.md">P2_PREREG.md</a> (merged before the run). Swap size a = 0.025&ndash;0.10 clr per step, D = 14 and D = 6 parts, T = 40 / 62; master seed 2026111701, B = 199, R = 1,000 per cell. Only the size check was pass/fail; the power curve is descriptive.</p>
-<table><tr><th>Cell</th><th>P1 power, D = 14</th><th>P1 power, D = 6</th></tr>
+<div class="table-wrap"><table><tr><th>Cell</th><th>P1 power, D = 14</th><th>P1 power, D = 6</th></tr>
 <tr><td>(i) null (size), T=40 / 62</td><td class="n">&mdash;</td><td class="n ok">0.051 / 0.042</td></tr>
 <tr><td>a = 0.025, T=40 / 62</td><td class="n">0.095 / 0.147</td><td class="n">0.085 / 0.088</td></tr>
 <tr><td>a = 0.05, T=40 / 62</td><td class="n">0.303 / 0.495</td><td class="n">0.187 / 0.281</td></tr>
 <tr><td>a = 0.075, T=40 / 62</td><td class="n">0.671 / 0.900</td><td class="n">0.423 / 0.614</td></tr>
-<tr><td>a = 0.10, T=40 / 62</td><td class="n">0.924 / 0.997</td><td class="n">0.619 / 0.879</td></tr></table>
+<tr><td>a = 0.10, T=40 / 62</td><td class="n">0.924 / 0.997</td><td class="n">0.619 / 0.879</td></tr></table></div>
+<figure>
+<div class="chart lines" data-title="P1 power (α = 0.05): solid T = 62, dashed T = 40" data-x='[0.025,0.05,0.075,0.1]' data-ref="0.8" data-xlabel="Swap size a (clr per step)" data-ylabel="Power" data-series='[{"name":"D = 14, T = 62","y":[0.147,0.495,0.900,0.997]},{"name":"D = 6, T = 62","y":[0.088,0.281,0.614,0.879]},{"name":"D = 14, T = 40","y":[0.095,0.303,0.671,0.924],"dash":1,"color":"#7baaf7"},{"name":"D = 6, T = 40","y":[0.085,0.187,0.423,0.619],"dash":1,"color":"#9aa0a6"}]'></div>
+<figcaption><b>Figure 2.</b> The power curve from the table above. The dashed red line is the 0.80 power mark used for the minimum detectable swap.</figcaption>
+</figure>
+
 <ul>
 <li><b>Verdict.</b> Size check at D = 6 is inside [0.030, 0.070] at both T: <span class="ok">PASS</span>.</li>
 <li><b>Minimum detectable swap</b> (P1 power &ge; 0.80 at T = 62): 0.075 with 14 parts, 0.10 with 6 parts. Swaps of 0.05 or less are mostly missed at these sample lengths.</li>
 <li>The level procedure L stays near zero power in every cell (&le; 0.014). Full table with intervals and the P1-naive, W and Mk columns: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/research/results/P2_RESULTS.md">P2_RESULTS.md</a>.</li></ul>
 
-<h2>4. How this was built</h2>
+<h2 id="built">4. How this was built</h2>
 <p>Implementation by the Claude Code CLI (core port, parity fixes, Extension 2 code) and the Codex CLI (R-oracle fixtures, parity suite, numba kernels, audits), each reviewing the other's work; checked against the oracle by the lab lead. Clean-room: ecotraj (GPL) was used only as a black box. Status log: <a href="https://github.com/jgridifier/ecotraj-py/blob/main/STATUS.md">STATUS.md</a>.</p>
-</body></html>
+</article>
+</main>
+<footer class="foot"><div class="in">
+<div><h4>ecotrajpy</h4><p>A clean-room Python port of Ecological Trajectory Analysis. MIT licensed. Synthetic data only in this repo.</p></div>
+<div><h4>For humans</h4><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="index.html#provenance">Provenance</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/README.md">README</a></div>
+<div><h4>For agents</h4><a href="https://github.com/jgridifier/ecotraj-py/blob/main/AGENTS.md">AGENTS.md</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/llms.txt">llms.txt</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">docs/api.md</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/PARITY.md">docs/PARITY.md</a></div>
+<div><h4>Project</h4><a href="https://github.com/jgridifier/ecotraj-py">Repository</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/CITATION.cff">CITATION.cff</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/NOTICE">NOTICE</a></div>
+</div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

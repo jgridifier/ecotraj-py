@@ -1,50 +1,89 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ecotrajpy: trajectory analysis for compositions, explained</title><link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32"><link rel="icon" href="favicon.ico" sizes="any"><link rel="apple-touch-icon" href="assets/logo-192.png"><link rel="stylesheet" href="style.css"></head><body>
-<nav><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">API</a><a href="https://github.com/jgridifier/ecotraj-py">Repo</a></nav>
-<header class="brand">
-<img src="assets/logo.png" width="52" height="52" alt="ecotrajpy logo: a dotted trajectory across a grid, shading from teal to green and ending in a leaf">
-<div>
-<h1>ecotrajpy</h1>
-<p class="sub">A clean-room Python port of Ecological Trajectory Analysis (ETA), plus a tested market/residual split for share data.</p>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ecotrajpy: trajectory analysis for compositions, explained</title>
+<meta name="description" content="A clean-room Python port of Ecological Trajectory Analysis (ETA), plus a tested market/residual split for share data.">
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/logo-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="alternate" type="text/plain" href="https://github.com/jgridifier/ecotraj-py/blob/main/llms.txt" title="llms.txt">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="in">
+<a class="wordmark" href="index.html"><img src="assets/logo.png" alt="ecotrajpy logo: a dotted trajectory across a grid, shading from teal to green and ending in a leaf" width="32" height="32"><span>ecotrajpy</span></a>
+<nav class="nav" aria-label="Site">
+<a href="index.html">Teaching page</a>
+<a href="results.html">Results</a>
+<a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">API</a>
+<a href="https://github.com/jgridifier/ecotraj-py/blob/main/AGENTS.md">AGENTS.md</a>
+<a href="https://github.com/jgridifier/ecotraj-py/blob/main/llms.txt">llms.txt</a>
+<a href="https://github.com/jgridifier/ecotraj-py">GitHub</a>
+</nav>
+</div></header>
+<section class="hero">
+<p class="eyebrow">Ecological Trajectory Analysis in Python</p>
+<h1>The shape of a path, measured</h1>
+<p class="lede">A clean-room Python port of Ecological Trajectory Analysis (ETA), plus a tested market/residual split for share data.</p>
+<div class="cta"><a class="btn primary" href="#s7">Get started</a><a class="btn" href="results.html">See the results</a><a class="btn" href="https://github.com/jgridifier/ecotraj-py">View on GitHub</a></div>
+<p class="meta">Source install only · synthetic data only · MIT licensed</p>
+</section>
+<div class="hero-figure"><figure>
+<img src="assets/hero.jpg" width="1280" height="720" alt="Illustration: dotted trajectories drifting across a faint grid, shading from teal to green, one ending in a leaf">
+<figcaption>Each survey is a point; ETA joins them into a directed path and studies its length, turns and persistence. Illustration made with Grok Imagine.</figcaption>
+</figure></div>
+<main>
+<article class="prose">
+<div class="cards">
+<a class="card" href="results.html#parity"><div class="k">Parity with ecotraj</div><div class="v">1,260 / 1,280</div><p>checks match exactly; the 20 others are documented R rounding quirks</p></a>
+<a class="card" href="results.html#speed"><div class="k">Sign-flip test, 62 × 14</div><div class="v">0.59 s</div><p>vs 98.8 s for the R loop (numba, 1 thread)</p></a>
+<a class="card" href="results.html#ext2"><div class="k">Extension 2</div><div class="v">0.052</div><p>false-positive rate at T = 40, inside the pre-registered band</p></a>
 </div>
-</header>
-
-<div class="box"><b>Credit.</b> The methods are by De Cáceres, Coll, Legendre, Allen, Wiser, Fortin, Condit &amp; Hubbell (2019, <i>Ecological Monographs</i> 89:e01350,
+<div class="callout blue"><p><b>Credit.</b> The methods are by De Cáceres, Coll, Legendre, Allen, Wiser, Fortin, Condit &amp; Hubbell (2019, <i>Ecological Monographs</i> 89:e01350,
 <a href="https://doi.org/10.1002/ecm.1350">doi</a>), Sturbois et al. (2021, <i>Ecological Modelling</i> 440:109400) and Djeghri et al. (2026, <i>Ecological Monographs</i> 96:e70058), implemented in the R package
-<a href="https://cran.r-project.org/package=ecotraj">ecotraj</a>. </div>
+<a href="https://cran.r-project.org/package=ecotraj">ecotraj</a>. </p></div>
 
-<div class="box" id="provenance"><b>Provenance and independence.</b> ecotrajpy was written by AI coding agents (OpenAI Codex and Anthropic Claude Code) working from the published papers and the public ecotraj documentation (help pages and vignettes). It is an independent implementation: no source code from the R package ecotraj was copied or translated, and the agents worked under a written rule not to read it. ecotraj (GPL ≥ 2) was used only as an external reference to benchmark numerical outputs, run as a separate program on synthetic inputs; no ecotraj datasets are included. ecotrajpy is MIT-licensed (<a href="https://github.com/jgridifier/ecotraj-py/blob/main/NOTICE">NOTICE</a>). ecotraj and the methods are © their authors; please cite the original papers above.</div>
+<div class="callout" id="provenance"><p><b>Provenance and independence.</b> ecotrajpy was written by AI coding agents (OpenAI Codex and Anthropic Claude Code) working from the published papers and the public ecotraj documentation (help pages and vignettes). It is an independent implementation: no source code from the R package ecotraj was copied or translated, and the agents worked under a written rule not to read it. ecotraj (GPL ≥ 2) was used only as an external reference to benchmark numerical outputs, run as a separate program on synthetic inputs; no ecotraj datasets are included. ecotrajpy is MIT-licensed (<a href="https://github.com/jgridifier/ecotraj-py/blob/main/NOTICE">NOTICE</a>). ecotraj and the methods are © their authors; please cite the original papers above.</p></div>
 
-<h2>1. The idea: a time series of states is a path</h2>
+<nav class="toc" aria-label="On this page">
+<a href="#s1">1. A time series of states is a path</a><a href="#s2">2. clr and Aitchison distance</a><a href="#s3">3. Directionality</a><a href="#s4">4. The sign-flip null</a><a href="#s5">5. Market and residual parts</a><a href="#s6">6. Comparing paths</a><a href="#s7">7. What is in the package</a></nav>
+<h2 id="s1">1. The idea: a time series of states is a path</h2>
 <p>Suppose you observe the same thing (a forest plot, a portfolio, a market split among a dozen players) at T dates, and each observation is a vector of many numbers. ETA treats the T states as points in a space where distances make sense, joins consecutive points with directed segments, and studies the <b>shape of the path</b>: how long it is, how sharply it turns, whether it keeps heading the same way, and how close it runs to other paths.</p>
 <p>Everything ETA computes needs only the matrix of pairwise distances between the states. That is why it works with any dissimilarity (Bray-Curtis, Aitchison, Euclidean) and why this port, like ecotraj, takes a distance matrix as its main input.</p>
 
-<h2>2. Shares need the right geometry: clr and Aitchison distance</h2>
+<h2 id="s2">2. Shares need the right geometry: clr and Aitchison distance</h2>
 <p>When each state is a set of shares that sum to one, ordinary Euclidean distance on raw shares is misleading: a move from 1% to 2% is a doubling, while 40% to 41% is noise. The standard fix (Aitchison) is the centred log-ratio transform</p>
-<p class="formula">clr(s)<sub>j</sub> = log s<sub>j</sub> − mean<sub>k</sub> log s<sub>k</sub></p>
+$$ \operatorname{clr}(s)_j = \log s_j - \operatorname{mean}_k \log s_k $$
 <p>Euclidean distance between clr vectors is the Aitchison distance. Statistics computed on clr paths do not depend on the order of the parts or on which orthonormal (ilr) basis you use, and additive moves in clr correspond to multiplicative moves (perturbations) on the shares.</p>
 
-<h2>3. Directionality: does the path keep heading the same way?</h2>
+<h2 id="s3">3. Directionality: does the path keep heading the same way?</h2>
 <p>For every ordered triple of states i &lt; j &lt; k, take the two segments i→j and j→k, with lengths s<sub>ij</sub>, s<sub>jk</sub>, and the change of direction θ<sub>ijk</sub> at j (0° = straight on, 180° = full reversal). De Cáceres et al. define</p>
-<p class="formula">D = Σ (s<sub>ij</sub> + s<sub>jk</sub>)(1 − θ<sub>ijk</sub>/180) / Σ (s<sub>ij</sub> + s<sub>jk</sub>)</p>
+$$ D = \frac{\sum (s_{ij} + s_{jk})\,(1 - \theta_{ijk}/180)}{\sum (s_{ij} + s_{jk})} $$
 <p>D is 1 for a straight line and about 0.5 for an aimless wander. Because it uses all triples, not just consecutive ones, it rewards paths that are directional over long stretches, even if they wiggle step to step. The angle comes from the three pairwise distances by the law of cosines; when a distance matrix breaks the triangle inequality, ecotraj adds the smallest constant that repairs that triangle, and so does this port.</p>
 
-<h2>4. Is it more directional than chance? The sign-flip null</h2>
+<h2 id="s4">4. Is it more directional than chance? The sign-flip null</h2>
 <p>ecotraj's built-in test shuffles the order of the surveys. On a smooth path that is a weak null: almost any shuffle looks jagged, so nearly everything comes out significant (our scout run got p = 0.001 on both panels). A sharper question is: given these exact step sizes, could random step <i>directions</i> produce this much persistence? The sign-flip null keeps every step's size and axis but flips its sign at random, rebuilds the path from the first state, and recomputes D. The p-value is (1 + #null ≥ observed)/(1 + draws).</p>
 
-<h2>5. Splitting a path into market and residual parts</h2>
-<p>Share paths often move because of a common driver (a volatility regime, an industry cycle) rather than anything specific to the parts. The 2026-11-12 scout tried two ways of removing that driver given k observed market covariates:</p>
+<h2 id="s5">5. Splitting a path into market and residual parts</h2>
+<p>Share paths often move because of a common driver (a volatility regime, a shared cycle) rather than anything specific to the parts. The 2026-11-12 scout tried two ways of removing that driver given k observed market covariates:</p>
 <ul>
 <li><b>Levels</b>: regress each clr coordinate on the covariates and test the residual levels. This hid a persistent residual drift (p = 0.994).</li>
 <li><b>Increments</b>: regress each clr <i>step</i> on the covariates' steps (no intercept), split every step into a fitted market piece and a residual piece, and rebuild a market sub-path and a residual sub-path from the first state. This found it (residual D = 0.595, p = 0.008).</li>
 </ul>
 <p>Because the split is additive in clr, the observed shares are exactly the start composition perturbed by the market path and by the residual path. Extension 2 (below) turns the increment split into a procedure with a demonstrated false-positive rate and power.</p>
 
-<h2>6. Comparing paths: segment and trajectory distances</h2>
+<h2 id="s6">6. Comparing paths: segment and trajectory distances</h2>
 <p>To compare two paths, ETA first measures distances between directed segments (Hausdorff; the directed-segment distance, which also penalises opposite directions; and the perpendicular-parallel-angle distance of Lee et al. 2007), then aggregates them: SPD averages point-to-path distances, DSPD averages each segment's distance to the nearest segment of the other path, and both can be symmetrised. Convergence tests use a Mann-Kendall trend on the sequence of distances between paths.</p>
 
-<h2>7. What is in the package</h2>
-<table><tr><th>Python</th><th>ecotraj</th></tr>
+<h2 id="s7">7. What is in the package</h2>
+<div class="table-wrap"><table><tr><th>Python</th><th>ecotraj</th></tr>
 <tr><td><code>define_trajectories</code></td><td>defineTrajectories</td></tr>
 <tr><td><code>trajectory_lengths</code>, <code>trajectory_speeds</code></td><td>trajectoryLengths, trajectorySpeeds</td></tr>
 <tr><td><code>trajectory_angles</code>, <code>trajectory_directionality</code></td><td>trajectoryAngles, trajectoryDirectionality</td></tr>
@@ -53,14 +92,24 @@
 <tr><td><code>segment_distances</code>, <code>trajectory_distances</code></td><td>segmentDistances, trajectoryDistances</td></tr>
 <tr><td><code>clr</code>, <code>signflip_test</code>, <code>increment_split</code></td><td>(scout-run helpers)</td></tr>
 <tr><td><code>ecotrajpy.fast</code></td><td>numba kernels for directionality and the sign-flip null (Extension 1)</td></tr>
-<tr><td><code>ecotrajpy.ext2</code></td><td>Extension 2 market/residual split and tests</td></tr></table>
-<pre>import numpy as np
+<tr><td><code>ecotrajpy.ext2</code></td><td>Extension 2 market/residual split and tests</td></tr></table></div>
+<pre><code>import numpy as np
 from ecotrajpy import clr
 from ecotrajpy.fast import signflip_test_fast
 
 shares = np.random.default_rng(0).dirichlet(np.ones(6) * 50, size=40)   # 40 dates x 6 parts
 res = signflip_test_fast(clr(shares), nsim=999, rng=1)
-print(res["stat"], res["p_value"])</pre>
+print(res["stat"], res["p_value"])</code></pre>
 <p>Results (parity with ecotraj, speed, and the Extension 2 simulations) are on the <a href="results.html">results page</a>.</p>
 <p class="sub">Synthetic data only in this repo.</p>
-</body></html>
+</article>
+</main>
+<footer class="foot"><div class="in">
+<div><h4>ecotrajpy</h4><p>A clean-room Python port of Ecological Trajectory Analysis. MIT licensed. Synthetic data only in this repo.</p></div>
+<div><h4>For humans</h4><a href="index.html">Teaching page</a><a href="results.html">Results</a><a href="index.html#provenance">Provenance</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/README.md">README</a></div>
+<div><h4>For agents</h4><a href="https://github.com/jgridifier/ecotraj-py/blob/main/AGENTS.md">AGENTS.md</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/llms.txt">llms.txt</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/api.md">docs/api.md</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/docs/PARITY.md">docs/PARITY.md</a></div>
+<div><h4>Project</h4><a href="https://github.com/jgridifier/ecotraj-py">Repository</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/CITATION.cff">CITATION.cff</a><a href="https://github.com/jgridifier/ecotraj-py/blob/main/NOTICE">NOTICE</a></div>
+</div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
